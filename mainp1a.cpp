@@ -8,6 +8,7 @@
 //
 
 #include <iostream>
+#include <stack>
 #include <limits.h>
 #include <list>
 #include <fstream>
@@ -19,8 +20,17 @@ using namespace std;
 
 #include "d_except.h"
 #include "d_matrix.h"
-#include "graph.h"
+#include <boost/graph/adjacency_list.hpp>
 #include "knapsack.h"
+
+using namespace boost;
+using namespace std;
+
+
+void exhaustiveKnapsack(knapsack sack,int value)
+{
+
+}
 
 int main()
 {

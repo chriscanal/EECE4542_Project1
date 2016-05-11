@@ -108,4 +108,8 @@ int main()
 
 		// cout << g;
 	}
+	catch (int e)
+	{
+		cout << "An exception occurred. Exception Nr. " << e << '\n';
+	}
 }

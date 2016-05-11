@@ -42,7 +42,7 @@ private:
         int nRows, nCols;
         // number of rows and columns
 
-        vector<vector<T>> mat;
+        vector<vector<T> > mat;
         // matrix is implemented as nRows vectors (rows),
         // each having nCols elements (columns)
 };
