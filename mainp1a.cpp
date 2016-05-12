@@ -15,6 +15,7 @@
 #include <queue>
 #include <vector>
 #include <time.h>
+#include <math.h>
 
 using namespace std;
 
@@ -27,8 +28,64 @@ using namespace boost;
 using namespace std;
 
 
-void exhaustiveKnapsack(knapsack sack,int value)
+void exhaustiveKnapsack(knapsack &sack,int seconds)
 {
+	std::vector<bool> trueVector(numObjects, true);
+	int i = 0;
+	bool foundPlace = false;
+	bool noMoreKnapsackSets = false;
+	vector <bool> selectedObj = sack.selected; // this is broken
+	int score = 0;
+
+	while (!noMoreKnapsackSets)
+	{
+		if (score < sack.getValue() && sack.getCost() <= getCostLimit() )
+		{
+			score = sack.getValue();
+			selectedObj = ;//do this later
+		}
+		foundPlace = false;
+		i = 0;
+		while (!foundPlace)
+		{
+			if (sack.isSelected(i){
+				sack.unSelect(i);
+				if (i == numObjects - 1)
+				{
+					noMoreKnapsackSets = true;
+				} else
+				{
+					i++;
+				}
+			} else {
+				sack.select(i);
+				foundPlace = true;
+			}
+		}
+	}
+}
+
+void resetKnapsackSelection(knapsack &sack)
+{
+
+}
+
+bool incrementSelection(knapsack &sack)
+{
+	std::vector<bool> lastCase = ;
+
+	if lastCase == sack.selected
+}
+
+int turnOn(int i, knapsack &sack){
+	if (i == sack.numObjects){
+		return sack.getCost();
+	} else {
+		return turnOn(i+1)
+	}
+}
+
+void turnOff(){
 
 }
 
