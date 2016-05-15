@@ -27,6 +27,12 @@ struct EdgeProperties;
 
 typedef adjacency_list<vecS, vecS, bidirectionalS, VertexProperties, EdgeProperties> Graph;
 
+typedef Graph::vertex_descriptor Vertex;
+typedef Graph::edge_descriptor Edge;
+typedef Graph::edge_iterator edge_iterator;
+typedef Graph::vertex_iterator vertex_iterator;
+typedef Graph::adjacency_iterator adj_iterator;
+
 struct VertexProperties
 {
 	pair<int,int> cell; // maze cell (x,y) value
@@ -76,7 +82,7 @@ void setNodeWeights(Graph &g, int w)
 	}
 }
 
-int exhaustiveColoring(graph &g, int numColors, int seconds)
+int exhaustiveColoring(Graph &g, int numColors, int seconds)
 {
 	std::cout << "\nClock time: " << clock() << std::endl;
 	clock_t beginTime,currentTime;
@@ -86,14 +92,19 @@ int exhaustiveColoring(graph &g, int numColors, int seconds)
 	bool noMoreColoringCombinations = false;
 	int numConflicts;
 	int vertexCounter;
+	bool foundPlace;
 
 	vector <int> colorCombination(num_vertices(g), 0);
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
 
 	while (!noMoreColoringCombinations && seconds > timePassed) {
 
 		vertexCounter = 0;
 		// Loop over all nodes in the graph
-		for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
+
+		for (vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
 		{
 			g[*vItr].color = colorCombination[vertexCounter];
 			vertexCounter++;
@@ -113,6 +124,23 @@ int exhaustiveColoring(graph &g, int numColors, int seconds)
 			}
 		}
 
+		index = 0;
+		while (!foundPlace)
+		{
+			if (colorCombination[index] == 3) {
+				sack.unSelect(index);
+				if (index == sack.getNumObjects() - 1)
+				{
+					noMoreKnapsackSets = true;
+				} else
+				{
+					index++;
+				}
+			} else {
+				sack.select(index);
+				foundPlace = true;
+			}
+		}
 
 		// checks time
 		currentTime = clock();
