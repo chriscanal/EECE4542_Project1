@@ -19,6 +19,7 @@ public:
         void select(int);
         void unSelect(int);
         bool isSelected(int) const;
+        vector<bool> getSelected();
 
 private:
         int numObjects;
@@ -55,6 +56,11 @@ knapsack::knapsack(ifstream &fin)
 
         totalValue = 0;
         totalCost = 0;
+}
+
+vector<bool> knapsack::getSelected()
+{
+    return selected;
 }
 
 knapsack::knapsack(const knapsack &k)

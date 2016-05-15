@@ -30,27 +30,32 @@ using namespace std;
 
 void exhaustiveKnapsack(knapsack &sack,int seconds)
 {
-	std::vector<bool> trueVector(numObjects, true);
+	std::cout << "\nClock time: " << clock() << std::endl;
+    clock_t beginTime,currentTime;
+	beginTime = clock();
+	float diff;
+	float timePassed;
+	std::vector<bool> trueVector(sack.getNumObjects(), true);
 	int i = 0;
 	bool foundPlace = false;
 	bool noMoreKnapsackSets = false;
-	vector <bool> selectedObj = sack.selected; // this is broken
+	vector <bool> selectedObj(sack.getNumObjects(),false);
 	int score = 0;
 
-	while (!noMoreKnapsackSets)
+	while (!noMoreKnapsackSets && seconds > timePassed)
 	{
-		if (score < sack.getValue() && sack.getCost() <= getCostLimit() )
+		if (score < sack.getValue() && sack.getCost() <= sack.getCostLimit() )
 		{
 			score = sack.getValue();
-			selectedObj = ;//do this later
+			selectedObj = sack.getSelected();
 		}
 		foundPlace = false;
 		i = 0;
 		while (!foundPlace)
 		{
-			if (sack.isSelected(i){
+			if (sack.isSelected(i)){
 				sack.unSelect(i);
-				if (i == numObjects - 1)
+				if (i == sack.getNumObjects() - 1)
 				{
 					noMoreKnapsackSets = true;
 				} else
@@ -62,31 +67,22 @@ void exhaustiveKnapsack(knapsack &sack,int seconds)
 				foundPlace = true;
 			}
 		}
+		currentTime = clock();
+		diff = ((float)currentTime-(float)beginTime);
+		timePassed = (diff / CLOCKS_PER_SEC);
+		cout<< "\nTime Passed: " << timePassed << seconds;
 	}
-}
-
-void resetKnapsackSelection(knapsack &sack)
-{
-
-}
-
-bool incrementSelection(knapsack &sack)
-{
-	std::vector<bool> lastCase = ;
-
-	if lastCase == sack.selected
-}
-
-int turnOn(int i, knapsack &sack){
-	if (i == sack.numObjects){
-		return sack.getCost();
-	} else {
-		return turnOn(i+1)
+	for (int i = 0; i < selectedObj.size() ; i++)
+	{
+		if (selectedObj[i])
+		{
+			sack.select(i);
+		}
+		else
+		{
+			sack.unSelect(i);
+		}
 	}
-}
-
-void turnOff(){
-
 }
 
 int main()
@@ -116,7 +112,7 @@ int main()
 		cout << "Reading knapsack instance" << endl;
 		knapsack k(fin);
 
-		exhaustiveKnapsack(k, 600);
+		exhaustiveKnapsack(k, 10);
 
 		cout << endl << "Best solution" << endl;
 		k.printSolution();
