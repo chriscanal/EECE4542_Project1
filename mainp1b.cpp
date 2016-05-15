@@ -93,8 +93,9 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	int numConflicts;
 	int vertexCounter;
 	bool foundPlace;
+	int numVertices = int num_vertices(g);
 
-	vector <int> colorCombination(num_vertices(g), 0);
+	vector <int> colorCombination(numVertices, 0);
 
 	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
 	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
@@ -127,17 +128,22 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 		index = 0;
 		while (!foundPlace)
 		{
-			if (colorCombination[index] == 3) {
-				sack.unSelect(index);
-				if (index == sack.getNumObjects() - 1)
+			if (colorCombination[index] == 3)
+			{
+				colorCombination[index] = 0;
+				if (index == numVertices - 1)
 				{
-					noMoreKnapsackSets = true;
-				} else
+					noMoreColoringCombinations = true;
+					break;
+				}
+				else
 				{
 					index++;
 				}
-			} else {
-				sack.select(index);
+			}
+			else
+			{
+				colorCombination[index]++;
 				foundPlace = true;
 			}
 		}
