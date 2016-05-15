@@ -146,7 +146,7 @@ int main()
 			cout << "Reading knapsack instance" << endl;
 			knapsack k(fin);
 
-			exhaustiveKnapsack(k, 1000);
+			exhaustiveKnapsack(k, 600);
 			writeOutToFile(k);
 
 			cout << endl << "Best solution" << endl;
