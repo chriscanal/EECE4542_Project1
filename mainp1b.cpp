@@ -161,6 +161,8 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
+
+	return minConflicts;
 }
 
 
