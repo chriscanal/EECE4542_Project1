@@ -70,7 +70,7 @@ void exhaustiveKnapsack(knapsack &sack,int seconds)
 		currentTime = clock();
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
-		cout<< "\nTime Passed: " << timePassed << seconds;
+		//cout<< "\nTime Passed: " << timePassed << " seconds";
 	}
 	for (int i = 0; i < selectedObj.size() ; i++)
 	{
@@ -83,6 +83,7 @@ void exhaustiveKnapsack(knapsack &sack,int seconds)
 			sack.unSelect(i);
 		}
 	}
+	cout<< "\nTime Passed: " << timePassed << " seconds";
 }
 
 int main()
@@ -112,7 +113,7 @@ int main()
 		cout << "Reading knapsack instance" << endl;
 		knapsack k(fin);
 
-		exhaustiveKnapsack(k, 10);
+		exhaustiveKnapsack(k, 600);
 
 		cout << endl << "Best solution" << endl;
 		k.printSolution();
