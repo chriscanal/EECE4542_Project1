@@ -166,33 +166,50 @@ int main()
 
 	// Read the name of the graph from the keyboard or
 	// hard code it here for testing.
+	vector<std::string> s;
+	s.push_back("color/color12-3.input");
+	s.push_back("color/color12-4.input");
+	s.push_back("color/color24-4.input");
+	s.push_back("color/color24-5.input");
+	s.push_back("color/color48-5.input");
+	s.push_back("color/color48-6.input");
+	s.push_back("color/color96-6.input");
+	s.push_back("color/color96-7.input");
+	s.push_back("color/color192-6.input");
+	s.push_back("color/color192-7.input");
+	s.push_back("color/color192-8.input");
 
-	fileName = "color/color12-3.input";
-
-	//   cout << "Enter filename" << endl;
-	//   cin >> fileName;
-
-	fin.open(fileName.c_str());
-	if (!fin)
+	for (int i = 0 ; i < s.size() ; i++)
 	{
-		cerr << "Cannot open " << fileName << endl;
-		exit(1);
+		fileName = s[i]
+
+		//   cout << "Enter filename" << endl;
+		//   cin >> fileName;
+
+		fin.open(fileName.c_str());
+		if (!fin)
+		{
+			cerr << "Cannot open " << fileName << endl;
+			exit(1);
+		}
+
+		try
+		{
+			cout << "Reading graph" << endl;
+			Graph g;
+			initializeGraph(g,fin);
+
+			cout << "Num nodes: " << num_vertices(g) << endl;
+			cout << "Num edges: " << num_edges(g) << endl;
+			cout << endl;
+
+			// cout << g;
+		}
+		catch (int e)
+		{
+			cout << "An exception occurred. Exception Nr. " << e << '\n';
+		}
 	}
 
-	try
-	{
-		cout << "Reading graph" << endl;
-		Graph g;
-		initializeGraph(g,fin);
 
-		cout << "Num nodes: " << num_vertices(g) << endl;
-		cout << "Num edges: " << num_edges(g) << endl;
-		cout << endl;
-
-		// cout << g;
-	}
-	catch (int e)
-	{
-		cout << "An exception occurred. Exception Nr. " << e << '\n';
-	}
 }
