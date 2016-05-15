@@ -31,11 +31,10 @@ using namespace std;
 void exhaustiveKnapsack(knapsack &sack,int seconds)
 {
 	std::cout << "\nClock time: " << clock() << std::endl;
-    clock_t beginTime,currentTime;
+  clock_t beginTime,currentTime;
 	beginTime = clock();
 	float diff;
 	float timePassed;
-	std::vector<bool> trueVector(sack.getNumObjects(), true);
 	int i = 0;
 	bool foundPlace = false;
 	bool noMoreKnapsackSets = false;

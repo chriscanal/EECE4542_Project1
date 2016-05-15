@@ -34,6 +34,7 @@ struct VertexProperties
 	bool visited;
 	bool marked;
 	int weight;
+	int color;
 };
 
 // Create a struct to hold properties for each edge
@@ -74,6 +75,53 @@ void setNodeWeights(Graph &g, int w)
 		g[*vItr].weight = w;
 	}
 }
+
+int exhaustiveColoring(graph &g, int numColors, int seconds)
+{
+	std::cout << "\nClock time: " << clock() << std::endl;
+	clock_t beginTime,currentTime;
+	beginTime = clock();
+	float diff;
+	float timePassed;
+	bool noMoreColoringCombinations = false;
+	int numConflicts;
+	int vertexCounter;
+
+	vector <int> colorCombination(num_vertices(g), 0);
+
+	while (!noMoreColoringCombinations && seconds > timePassed) {
+
+		vertexCounter = 0;
+		// Loop over all nodes in the graph
+		for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
+		{
+			g[*vItr].color = colorCombination[vertexCounter];
+			vertexCounter++;
+			cout << g[*vItr].color << endl;
+		}
+
+		// Loop over all edges in the graph
+		for (Graph::edge_iterator eItr= eItrRange.first; eItr != eItrRange.second; ++eItr)
+		{
+			// Returns the target vertex of edge e.
+			vertex_descriptor targetNode = target(*eItr, g);
+			vertex_descriptor sourceNode = source(*eItr, g);
+
+			if (g[targetNode].color == g[sourceNode].color)
+			{
+				numConflicts++;
+			}
+		}
+
+
+		// checks time
+		currentTime = clock();
+		diff = ((float)currentTime-(float)beginTime);
+		timePassed = (diff / CLOCKS_PER_SEC);
+	}
+
+}
+
 
 int main()
 {
