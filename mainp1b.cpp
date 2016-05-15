@@ -12,6 +12,7 @@
 #include <limits.h>
 #include "d_except.h"
 #include <fstream>
+#include <limts>
 
 #include <boost/graph/adjacency_list.hpp>
 
@@ -93,7 +94,9 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	int numConflicts;
 	int vertexCounter;
 	bool foundPlace;
-	int numVertices = int num_vertices(g);
+	int numVertices = num_vertices(g);
+	int index;
+	int minConflicts = -1;
 
 	vector <int> colorCombination(numVertices, 0);
 
@@ -116,13 +119,18 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 		for (Graph::edge_iterator eItr= eItrRange.first; eItr != eItrRange.second; ++eItr)
 		{
 			// Returns the target vertex of edge e.
-			vertex_descriptor targetNode = target(*eItr, g);
-			vertex_descriptor sourceNode = source(*eItr, g);
+			Graph::vertex_descriptor targetNode = target(*eItr, g);
+			Graph::vertex_descriptor sourceNode = source(*eItr, g);
 
 			if (g[targetNode].color == g[sourceNode].color)
 			{
 				numConflicts++;
 			}
+		}
+
+		if (minConflicts > numConflicts)
+		{
+			minConflicts = numConflicts;
 		}
 
 		index = 0;
@@ -153,7 +161,6 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
-
 }
 
 
