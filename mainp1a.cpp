@@ -115,8 +115,7 @@ int main()
 
 	// fileName = "knapsack16.input";
 
-	//cout << "Enter filename" << endl;
-	//cin >> fileName;
+
 	vector<std::string> s;
 	s.push_back("knapsack/knapsack8.input");
 	s.push_back("knapsack/knapsack12.input");
@@ -130,9 +129,12 @@ int main()
 	s.push_back("knapsack/knapsack256.input");
 	s.push_back("knapsack/knapsack512.input");
 	s.push_back("knapsack/knapsack1024.input");
+
 	for (int i = 0 ; i < s.size() ; i++)
 	{
-		fileName = s[i];
+		cout << "Enter filename" << endl;
+		cin >> fileName;
+		//fileName = s[i];
 		fin.open(fileName.c_str());
 		if (!fin)
 		{

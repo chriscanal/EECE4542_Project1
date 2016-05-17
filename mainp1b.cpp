@@ -225,10 +225,10 @@ int main()
 
 	for (int i = 0 ; i < s.size() ; i++)
 	{
-		fileName = "color/"+s[i]+".input";
+		//fileName = "color/"+s[i]+".input";
 
-		//   cout << "Enter filename" << endl;
-		//   cin >> fileName;
+		cout << "Enter filename" << endl;
+		cin >> fileName;
 
 		fin.open(fileName.c_str());
 		if (!fin)
@@ -245,7 +245,7 @@ int main()
 
 			cout << "Num nodes: " << num_vertices(g) << endl;
 			cout << "Num edges: " << num_edges(g) << endl;
-			conflicts = exhaustiveColoring(g,colors,1000);
+			conflicts = exhaustiveColoring(g,colors,600);
 			writeOutToFile(g, conflicts, s[i]);
 			cout << endl;
 
