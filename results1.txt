@@ -1,0 +1,5 @@
+Chris Canal
+Kenny Jean-Baptiste
+Advanced Algorithms Project 1
+
+Each of these exhaustive algorithms did well with a small sample size, finishing in a few seconds or less; however, as soon as “n” was in the 20 or more range, the time for these algorithms to complete became outrageous. This is mainly due to the complexity of these algorithms. The exhaustive search for knapsack has a complexity of . This is also the size of the solution space. This is a horrible complexity, but not as bad as coloring. The exhaustive graph coloring algorithm complexity is savage. The complexity of the graph coloring algorithm is , where C is the number of colors. This is extremely inefficient when the number of color increases and the graph size increases. As the graph size increased and the amount of colors increased, the number of conflicts began to approach the number of edges.
