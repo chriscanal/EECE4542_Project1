@@ -136,7 +136,7 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 		index = 0;
 		while (!foundPlace)
 		{
-			if (colorCombination[index] == 3)
+			if (colorCombination[index] == numColors)
 			{
 				colorCombination[index] = 0;
 				if (index == numVertices - 1)

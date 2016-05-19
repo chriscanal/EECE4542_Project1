@@ -1,6 +1,7 @@
 // Knapsack class
 // Version f08.1
 #include <iostream>
+#include "item.h"
 
 using namespace std;
 
@@ -20,13 +21,17 @@ public:
         void unSelect(int);
         bool isSelected(int) const;
         vector<bool> getSelected();
+        vector<Item> getItems();
+        void setItems(vector<Items> items);
+
 
 private:
         int numObjects;
         int costLimit;
-        vector<int> value;
-        vector<int> cost;
-        vector<bool> selected;
+        vector<Item> items;
+        // vector<int> value;
+        // vector<int> cost;
+        // vector<bool> selected;
         int totalValue;
         int totalCost;
 };
@@ -42,16 +47,18 @@ knapsack::knapsack(ifstream &fin)
         numObjects = n;
         costLimit = b;
 
-        value.resize(n);
-        cost.resize(n);
-        selected.resize(n);
+        items.resize(n);
+        //value.resize(n);
+        //cost.resize(n);
+        //selected.resize(n);
 
         for (int i = 0; i < n; i++)
         {
                 fin >> j >> v >> c;
-                value[j] = v;
-                cost[j] = c;
-                unSelect(j);
+                items[j] = new Item(v, c, false);
+                // value[j] = v;
+                // cost[j] = c;
+                // unSelect(j);
         }
 
         totalValue = 0;
@@ -63,14 +70,23 @@ vector<bool> knapsack::getSelected()
     return selected;
 }
 
+vector<Item> knapsack::getItems()
+{
+    return items;
+}
+
+/*
+fix me when you are not being lazy.
+
 knapsack::knapsack(const knapsack &k)
 // Knapsack copy constructor.
 {
         int n = k.getNumObjects();
 
-        value.resize(n);
-        cost.resize(n);
-        selected.resize(n);
+        items.resize(n);
+        // value.resize(n);
+        // cost.resize(n);
+        // selected.resize(n);
         numObjects = k.getNumObjects();
         costLimit = k.getCostLimit();
 
@@ -79,6 +95,7 @@ knapsack::knapsack(const knapsack &k)
 
         for (int i = 0; i < n; i++)
         {
+            items[j] = new Item(k.getValue(i), k.getCost(i), false);
                 value[i] = k.getValue(i);
                 cost[i] = k.getCost(i);
                 if (k.isSelected(i))
@@ -87,6 +104,7 @@ knapsack::knapsack(const knapsack &k)
                         unSelect(i);
         }
 }
+*/
 
 int knapsack::getNumObjects() const
 {
@@ -105,7 +123,7 @@ int knapsack::getValue(int i) const
         if (i < 0 || i >= getNumObjects())
                 throw rangeError("Bad value in knapsack::getValue");
 
-        return value[i];
+        return items[i].getValue();
 }
 
 int knapsack::getCost(int i) const
@@ -114,7 +132,7 @@ int knapsack::getCost(int i) const
         if (i < 0 || i >= getNumObjects())
                 throw rangeError("Bad value in knapsack::getCost");
 
-        return cost[i];
+        return items[i].getCost();
 }
 
 int knapsack::getCost() const
@@ -186,9 +204,9 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
                 if (i < 0 || i >= getNumObjects())
                         throw rangeError("Bad value in knapsack::Select");
 
-                if (selected[i] == false)
+                if (!isSelected(i))
                 {
-                        selected[i] = true;
+                        items[i].select() = true;
                         totalCost = totalCost + getCost(i);
                         totalValue = totalValue + getValue(i);
                 }
@@ -200,9 +218,9 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
                 if (i < 0 || i >= getNumObjects())
                         throw rangeError("Bad value in knapsack::unSelect");
 
-                if (selected[i] == true)
+                if (isSelected(i))
                 {
-                        selected[i] = false;
+                        items[i].select() = false;
                         totalCost = totalCost - getCost(i);
                         totalValue = totalValue - getValue(i);
                 }
@@ -214,5 +232,10 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
                 if (i < 0 || i >= getNumObjects())
                         throw rangeError("Bad value in knapsack::getValue");
 
-                return selected[i];
+                return items[i].isSelected();
         }
+
+void knapsack::setItems(vector<Items> items)
+{
+    this->items = items;
+}

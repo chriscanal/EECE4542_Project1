@@ -27,18 +27,20 @@ using namespace std;
 using namespace boost;
 using namespace std;
 
+void greedyKnapsack(knapsack &sack)
+{
+	
+}
 
-void exhaustiveKnapsack(knapsack &sack,int seconds)
+void exhaustiveKnapsack(knapsack &sack, int seconds)
 {
 	std::cout << "\nClock time: " << clock() << std::endl;
-  clock_t beginTime,currentTime;
+    clock_t beginTime,currentTime;
 	beginTime = clock();
 	float diff;
 	float timePassed;
-	int i = 0;
-	bool foundPlace = false;
 	bool noMoreKnapsackSets = false;
-	vector <bool> selectedObj(sack.getNumObjects(),false);
+	vector <bool> selectedObj;
 	int score = 0;
 
 	while (!noMoreKnapsackSets && seconds > timePassed)
@@ -48,32 +50,63 @@ void exhaustiveKnapsack(knapsack &sack,int seconds)
 			score = sack.getValue();
 			selectedObj = sack.getSelected();
 		}
-		foundPlace = false;
-		i = 0;
-		while (!foundPlace)
-		{
-			if (sack.isSelected(i)){
-				sack.unSelect(i);
-				if (i == sack.getNumObjects() - 1)
-				{
-					noMoreKnapsackSets = true;
-				} else
-				{
-					i++;
-				}
-			} else {
-				sack.select(i);
-				foundPlace = true;
-			}
-		}
+
+		noMoreKnapsackSets = !successfulIncrementKnapsackSet(sack);
+
 		currentTime = clock();
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 		//cout<< "\nTime Passed: " << timePassed << " seconds";
 	}
-	for (int i = 0; i < selectedObj.size() ; i++)
+
+	setKnapsackSelectedSet(sack, selectedObj);
+
+	cout<< "\nTime Passed: " << timePassed << " seconds";
+}
+
+//
+void resetKnapsackSetSelection(knapsack &sack)
+{
+	for (int i = 0; i < sack.getNumObjects(); i++)
 	{
-		if (selectedObj[i])
+		sack.unSelect(i);
+	}
+}
+
+//Returns True on Success
+bool successfulIncrementKnapsackSet(knapsack &sack)
+{
+	bool foundPlace = false;
+	int index = 0;
+	while (!foundPlace)
+	{
+		if (sack.isSelected(index))
+		{
+			sack.unSelect(index);
+			if (index == sack.getNumObjects() - 1)
+			{
+				return foundPlace;
+			}
+			else
+			{
+				index++;
+			}
+		}
+		else
+		{
+			sack.select(index);
+			foundPlace = true;
+		}
+	}
+	return foundPlace;
+}
+
+//sets Knapsack Selection to select
+void setKnapsackSelectedSet(knapsack &sack, vector<bool> &select)
+{
+	for (int i = 0; i < select.size() ; i++)
+	{
+		if (select[i])
 		{
 			sack.select(i);
 		}
@@ -82,7 +115,6 @@ void exhaustiveKnapsack(knapsack &sack,int seconds)
 			sack.unSelect(i);
 		}
 	}
-	cout<< "\nTime Passed: " << timePassed << " seconds";
 }
 
 int main()
