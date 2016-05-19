@@ -12,7 +12,7 @@
 #include <limits.h>
 #include "d_except.h"
 #include <fstream>
-#include <limts>
+//#include <limts>
 
 #include <boost/graph/adjacency_list.hpp>
 
@@ -52,12 +52,14 @@ struct EdgeProperties
 	bool marked;
 };
 
-void initializeGraph(Graph &g, ifstream &fin)
+int initializeGraph(Graph &g, ifstream &fin)
 // Initialize g using data from fin.
 {
+	int color;
 	int n, e;
 	int j,k;
 
+	fin >> color;
 	fin >> n >> e;
 	Graph::vertex_descriptor v;
 
@@ -70,6 +72,7 @@ void initializeGraph(Graph &g, ifstream &fin)
 		fin >> j >> k;
 		add_edge(j,k,g); // Assumes vertex list is type vecS
 	}
+	return color;
 }
 
 void setNodeWeights(Graph &g, int w)
@@ -89,7 +92,7 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	clock_t beginTime,currentTime;
 	beginTime = clock();
 	float diff;
-	float timePassed;
+	float timePassed = 0;
 	bool noMoreColoringCombinations = false;
 	int numConflicts;
 	int vertexCounter;
@@ -99,21 +102,25 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	int minConflicts = -1;
 
 	vector <int> colorCombination(numVertices, 0);
+	vector <int> bestColorCombination(numVertices, 0);
+
 
 	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
 	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
 
 	while (!noMoreColoringCombinations && seconds > timePassed) {
-
 		vertexCounter = 0;
+		numConflicts = 0;
 		// Loop over all nodes in the graph
 
 		for (vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
 		{
+
 			g[*vItr].color = colorCombination[vertexCounter];
 			vertexCounter++;
-			cout << g[*vItr].color << endl;
+			//cout << "\nThe color of the " << vertexCounter << " node is " << g[*vItr].color;
 		}
+		//cout <<"\n";
 
 		// Loop over all edges in the graph
 		for (Graph::edge_iterator eItr= eItrRange.first; eItr != eItrRange.second; ++eItr)
@@ -128,15 +135,17 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 			}
 		}
 
-		if (minConflicts > numConflicts)
+		if (minConflicts > numConflicts || minConflicts == -1)
 		{
 			minConflicts = numConflicts;
+			bestColorCombination = colorCombination;
 		}
 
 		index = 0;
+		foundPlace = false;
 		while (!foundPlace)
 		{
-			if (colorCombination[index] == numColors)
+			if (colorCombination[index] == numColors-1)
 			{
 				colorCombination[index] = 0;
 				if (index == numVertices - 1)
@@ -160,11 +169,35 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 		currentTime = clock();
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
+		//cout << "\ntime passed: " << timePassed << endl;
 	}
-
+	vertexCounter = 0;
+	for (vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		g[*vItr].color = bestColorCombination[vertexCounter];
+		vertexCounter++;
+	}
 	return minConflicts;
 }
 
+void writeOutToFile(Graph &g, int conflicts, std::string inputFileName)
+{
+	std::string fileName = inputFileName+".output";
+	ofstream myfile;
+    myfile.open (fileName);
+
+	myfile << "Total conflicts : " << conflicts << endl;
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+	// Print out objects in the solution
+	for (vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		myfile << g[*vItr].color << endl;
+	}
+
+	myfile << endl;
+    myfile.close();
+}
 
 int main()
 {
@@ -174,33 +207,56 @@ int main()
 
 	// Read the name of the graph from the keyboard or
 	// hard code it here for testing.
+	vector<std::string> s;
+	s.push_back("color12-3");
+	s.push_back("color12-4");
+	s.push_back("color24-4");
+	s.push_back("color24-5");
+	s.push_back("color48-5");
+	s.push_back("color48-6");
+	s.push_back("color96-6");
+	s.push_back("color96-7");
+	s.push_back("color192-6");
+	s.push_back("color192-7");
+	s.push_back("color192-8");
 
-	fileName = "/Users/wmeleis/2560-code/tree2/tree/graph1.txt";
+	int conflicts;
+	int colors;
 
-	//   cout << "Enter filename" << endl;
-	//   cin >> fileName;
-
-	fin.open(fileName.c_str());
-	if (!fin)
+	for (int i = 0 ; i < s.size() ; i++)
 	{
-		cerr << "Cannot open " << fileName << endl;
-		exit(1);
+		fileName = "color/"+s[i]+".input";
+
+		//   cout << "Enter filename" << endl;
+		//   cin >> fileName;
+
+		fin.open(fileName.c_str());
+		if (!fin)
+		{
+			cerr << "Cannot open " << fileName << endl;
+			exit(1);
+		}
+
+		try
+		{
+			cout << "Reading graph" << endl;
+			Graph g;
+			colors = initializeGraph(g,fin);
+
+			cout << "Num nodes: " << num_vertices(g) << endl;
+			cout << "Num edges: " << num_edges(g) << endl;
+			conflicts = exhaustiveColoring(g,colors,1000);
+			writeOutToFile(g, conflicts, s[i]);
+			cout << endl;
+
+			// cout << g;
+		}
+		catch (int e)
+		{
+			cout << "An exception occurred. Exception Nr. " << e << '\n';
+		}
+		fin.close();
 	}
 
-	try
-	{
-		cout << "Reading graph" << endl;
-		Graph g;
-		initializeGraph(g,fin);
 
-		cout << "Num nodes: " << num_vertices(g) << endl;
-		cout << "Num edges: " << num_edges(g) << endl;
-		cout << endl;
-
-		// cout << g;
-	}
-	catch (int e)
-	{
-		cout << "An exception occurred. Exception Nr. " << e << '\n';
-	}
 }
