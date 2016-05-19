@@ -1,6 +1,7 @@
 // Knapsack class
 // Version f08.1
 #include <iostream>
+#include "item.h"
 
 using namespace std;
 
@@ -8,7 +9,7 @@ class knapsack
 {
 public:
         knapsack(ifstream &fin);
-        knapsack(const knapsack &);
+        knapsack( knapsack &);
         int getCost(int) const;
         int getValue(int) const;
         int getCost() const;
@@ -20,13 +21,17 @@ public:
         void unSelect(int);
         bool isSelected(int) const;
         vector<bool> getSelected();
+        vector<Item> getItems();
+        void setItems(vector<Item> items);
+
 
 private:
         int numObjects;
         int costLimit;
-        vector<int> value;
-        vector<int> cost;
-        vector<bool> selected;
+        vector<Item> items;
+        // vector<int> value;
+        // vector<int> cost;
+        // vector<bool> selected;
         int totalValue;
         int totalCost;
 };
@@ -42,16 +47,20 @@ knapsack::knapsack(ifstream &fin)
         numObjects = n;
         costLimit = b;
 
-        value.resize(n);
-        cost.resize(n);
-        selected.resize(n);
+        items.resize(n);
+        //value.resize(n);
+        //cost.resize(n);
+        //selected.resize(n);
 
         for (int i = 0; i < n; i++)
         {
                 fin >> j >> v >> c;
-                value[j] = v;
-                cost[j] = c;
-                unSelect(j);
+                items[j].setValue(v);
+                items[j].setCost(c);
+                items[j].unSelect();
+                // value[j] = v;
+                // cost[j] = c;
+                // unSelect(j);
         }
 
         totalValue = 0;
@@ -60,33 +69,37 @@ knapsack::knapsack(ifstream &fin)
 
 vector<bool> knapsack::getSelected()
 {
-    return selected;
+    vector<bool> selectedVector;
+    for (int i = 0 ; i < numObjects ; i++)
+    {
+        selectedVector.push_back(items[i].isSelected());
+    }
+    return selectedVector;
 }
 
-knapsack::knapsack(const knapsack &k)
-// Knapsack copy constructor.
+vector<Item> knapsack::getItems()
+{
+    return items;
+}
+
+
+knapsack::knapsack( knapsack &k)
 {
         int n = k.getNumObjects();
 
-        value.resize(n);
-        cost.resize(n);
-        selected.resize(n);
+        items.resize(n);
+        // value.resize(n);
+        // cost.resize(n);
+        // selected.resize(n);
         numObjects = k.getNumObjects();
         costLimit = k.getCostLimit();
 
         totalCost = 0;
         totalValue = 0;
 
-        for (int i = 0; i < n; i++)
-        {
-                value[i] = k.getValue(i);
-                cost[i] = k.getCost(i);
-                if (k.isSelected(i))
-                        select(i);
-                else
-                        unSelect(i);
-        }
+        items = k.getItems();
 }
+
 
 int knapsack::getNumObjects() const
 {
@@ -105,7 +118,7 @@ int knapsack::getValue(int i) const
         if (i < 0 || i >= getNumObjects())
                 throw rangeError("Bad value in knapsack::getValue");
 
-        return value[i];
+        return items[i].getValue();
 }
 
 int knapsack::getCost(int i) const
@@ -114,7 +127,7 @@ int knapsack::getCost(int i) const
         if (i < 0 || i >= getNumObjects())
                 throw rangeError("Bad value in knapsack::getCost");
 
-        return cost[i];
+        return items[i].getCost();
 }
 
 int knapsack::getCost() const
@@ -159,7 +172,7 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
 // Prints out the solution.
                 {
                 cout << "------------------------------------------------" << endl;
-
+                cout << "Cost Limit: " << getCostLimit() << endl;
                 cout << "Total value: " << getValue() << endl;
                 cout << "Total cost: " << getCost() << endl << endl;
 
@@ -186,9 +199,9 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
                 if (i < 0 || i >= getNumObjects())
                         throw rangeError("Bad value in knapsack::Select");
 
-                if (selected[i] == false)
+                if (!isSelected(i))
                 {
-                        selected[i] = true;
+                        items[i].select();
                         totalCost = totalCost + getCost(i);
                         totalValue = totalValue + getValue(i);
                 }
@@ -200,9 +213,9 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
                 if (i < 0 || i >= getNumObjects())
                         throw rangeError("Bad value in knapsack::unSelect");
 
-                if (selected[i] == true)
+                if (isSelected(i))
                 {
-                        selected[i] = false;
+                        items[i].unSelect();
                         totalCost = totalCost - getCost(i);
                         totalValue = totalValue - getValue(i);
                 }
@@ -214,5 +227,10 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
                 if (i < 0 || i >= getNumObjects())
                         throw rangeError("Bad value in knapsack::getValue");
 
-                return selected[i];
+                return items[i].isSelected();
         }
+
+void knapsack::setItems(vector<Item> items)
+{
+    this->items = items;
+}
