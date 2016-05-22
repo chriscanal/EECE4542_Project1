@@ -195,7 +195,6 @@ void quickSort(knapsack &sacky)
 			itemVector.at(j) = tmp;
 			i++;
 			j--;
-
 		} //end of if left is less than right
 
 	} //end of while left is less than right
@@ -206,11 +205,10 @@ void quickSort(knapsack &sacky)
 	if (i < right) //if right size is less than number greater than pivot
 		quickHelper(&itemVector, i, right);
 
-
 	sacky.setItems(itemVector);
 } //end of quicksort
 
-void greedyAlgorithm(knapsack &k)
+void greedyKnapsack(knapsack &k)
 {
 	quickSort(k);
 	for (int i = 0 ; i < k.getNumObjects() ; i++)
@@ -283,13 +281,11 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			greedyAlgorithm(k);
+			greedyKnapsack(k);
 			k.printSolution();
-
 
 			//exhaustiveKnapsack(k, 600);
 			writeOutToFile(k);
-
 
 			cout << endl << "Best solution" << endl;
 			k.printSolution();

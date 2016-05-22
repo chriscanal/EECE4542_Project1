@@ -199,6 +199,80 @@ void writeOutToFile(Graph &g, int conflicts, std::string inputFileName)
     myfile.close();
 }
 
+vector<Graph::vertex_descriptor> getVertices(Graph &g)
+{
+	vector<Graph::vertex_descriptor> nodes;
+	
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+
+	for (vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		g[*vItr].color = -1;
+		nodes.push_back(*vItr);
+	}
+
+	return nodes;
+}
+
+int getDegree(Graph::vertex_descriptor &v, Graph &g)
+{
+	int degree = 0;
+
+	// Get a pair containing iterators pointing to the beginning and end of the
+	// list of nodes adjacent to node v
+	pair<Graph::adjacency_iterator, Graph::adjacency_iterator>
+		vItrRange = adjacent_vertices(Graph::vertex_descriptor v, Graph &g);
+
+	// Loop over adjacent nodes in the graph
+	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		degree++;
+	}
+
+	return degree;
+}
+
+int getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
+{
+	vector<int> colorConflicts(colors, 0);
+	int color;
+
+	// Get a pair containing iterators pointing to the beginning and end of the
+	// list of nodes adjacent to node v
+	pair<Graph::adjacency_iterator, Graph::adjacency_iterator>
+		vItrRange = adjacent_vertices(Graph::vertex_descriptor v, Graph &g);
+
+	// Loop over adjacent nodes in the graph
+	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		color = g[*vItr];
+		if (color >= 0 && color < colors)
+		{
+			colorConflicts[color]++;
+		}
+	}
+
+	for (int i = 0; colorConflicts.size(); i++)
+	{
+		if (i == 0)
+		{
+			color = 0;
+		}
+
+		if (colorConflicts[i] < coloConflicts[color])
+		{
+			color = i;
+		}
+	}
+
+	return color;
+}
+
+void addColor(int colors, Graph::vertex_descriptor &v, Graph &g)
+{
+	g[v].color = color;
+}
+
 int main()
 {
 	char x;
