@@ -184,7 +184,7 @@ void writeOutToFile(Graph &g, int conflicts, std::string inputFileName)
 {
 	std::string fileName = inputFileName+".output";
 	ofstream myfile;
-    myfile.open (fileName);
+	myfile.open (fileName);
 
 	myfile << "Total conflicts : " << conflicts << endl;
 
@@ -196,13 +196,13 @@ void writeOutToFile(Graph &g, int conflicts, std::string inputFileName)
 	}
 
 	myfile << endl;
-    myfile.close();
+	myfile.close();
 }
 
 vector<Graph::vertex_descriptor> getVertices(Graph &g)
 {
 	vector<Graph::vertex_descriptor> nodes;
-	
+
 	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
 
 	for (vertex_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
@@ -221,7 +221,7 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 	// Get a pair containing iterators pointing to the beginning and end of the
 	// list of nodes adjacent to node v
 	pair<Graph::adjacency_iterator, Graph::adjacency_iterator>
-		vItrRange = adjacent_vertices(Graph::vertex_descriptor v, Graph &g);
+	vItrRange = adjacent_vertices(v, g);
 
 	// Loop over adjacent nodes in the graph
 	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
@@ -232,45 +232,149 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 	return degree;
 }
 
-int getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
+pair<int, int> getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
 {
 	vector<int> colorConflicts(colors, 0);
-	int color;
+	int color = -1;
 
 	// Get a pair containing iterators pointing to the beginning and end of the
 	// list of nodes adjacent to node v
 	pair<Graph::adjacency_iterator, Graph::adjacency_iterator>
-		vItrRange = adjacent_vertices(Graph::vertex_descriptor v, Graph &g);
+	vItrRange = adjacent_vertices(v, g);
 
 	// Loop over adjacent nodes in the graph
 	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
 	{
-		color = g[*vItr];
+		color = g[*vItr].color;
 		if (color >= 0 && color < colors)
 		{
 			colorConflicts[color]++;
 		}
 	}
 
+	color = -1;
+
 	for (int i = 0; colorConflicts.size(); i++)
 	{
-		if (i == 0)
+		if (color == -1)
 		{
-			color = 0;
+			color = i;
 		}
-
-		if (colorConflicts[i] < coloConflicts[color])
+		else if (colorConflicts[i] < colorConflicts[color])
 		{
 			color = i;
 		}
 	}
 
-	return color;
+	return make_pair<int,int>(color, colorConflicts[color]);
 }
 
-void addColor(int colors, Graph::vertex_descriptor &v, Graph &g)
+void addColor(int color, Graph::vertex_descriptor &v, Graph &g)
 {
 	g[v].color = color;
+}
+
+
+void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int right)
+//helper for recursion in quicksort
+{
+	cout << "\n inside the quicksort helper";
+	int i = left, j = right;
+	Graph::vertex_descriptor tmp;
+	Graph::vertex_descriptor pivot = a.at((left + right) / 2);
+
+	//partition
+	while (i <= j)
+	{
+		cout << "\n inside the quicksort helper while loop";
+		cout << "\n i =" << i;
+		cout << "\n j =" << j;
+		while (getDegree(a.at(i),g) >= getDegree(pivot,g) && i < pivot) //determines how many are less than pivot
+			i++;
+
+		while (getDegree(a.at(j),g) < getDegree(pivot,g)) //determines how many are more than pivot
+			j--;
+
+		if (i <= j)
+		//checks how the list was divided around pivot, inserts in list
+		{
+			cout << "\nWhat is ggiong on";
+			cout << "\nin if statment";
+			cout << "\n i =" << i;
+			cout << "\n j =" << j;
+			tmp = a.at(i);
+			a.at(i) = a.at(j);
+			a.at(j) = tmp;
+			i++;
+			j--;
+
+		}
+	}
+
+	if (left < j)
+		quickHelper(a, g, left, j); //recurs on quickHelper
+
+	if (i < right)
+		quickHelper(a, g, i, right); //recurs on quickHelper
+
+} //end of quick helper
+
+vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descriptor>& vertexVector)
+//quicksort function
+{
+	/*
+	int i = 0, j = 1;
+	int min = 0;
+	int location = 0;
+	vector<Graph::vertex_descriptor> newVertexVector;
+	vector<bool> vertexUsed(vertexVector.size(), false);
+	cout << "\nwhy?";
+
+
+	while (i < vertexVector.size()-1)
+	//while size of left is less than size of right
+	{
+		cout << "\nwhy me?";
+		min = getDegree(vertexVector.at(i),g);
+		location = i;
+		for (int j = 0; j < vertexVector.size()-1; j++)
+		{
+			cout << "\n herrro prease" << j;
+			if (min > getDegree(vertexVector.at(j),g) && !vertexUsed.at(j))
+			{
+				min = getDegree(vertexVector.at(j),g);
+				location = j;
+			}
+		}
+		vertexUsed.at(location) = true;
+		newVertexVector.push_back(vertexVector.at(location));
+
+		i++;
+	} //end of while left is less than right
+
+	cout << "The sort finished";
+	return newVertexVector;
+	*/
+	return vertexVector;
+} //end of quicksort
+
+int greedy(Graph &g, int colors)
+{
+	cout << "\ninside the greedy";
+	int conflicts = 0;
+	vector<Graph::vertex_descriptor> vertexVector = getVertices(g);
+	vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
+	pair<int, int> color_colorConflicts;
+
+
+	for(int i = 0; i < vertexVector.size(); i++)
+	{
+		color_colorConflicts = getBestColor(colors, vertexVector[i], g);
+		addColor(color_colorConflicts.first, vertexVector[i], g);
+		conflicts = conflicts + color_colorConflicts.second;
+	}
+
+	return conflicts;
 }
 
 int main()
@@ -297,12 +401,12 @@ int main()
 	int conflicts;
 	int colors;
 
-	for (int i = 0 ; i < s.size() ; i++)
+	for (int i = 0; i < s.size(); i++)
 	{
-		//fileName = "color/"+s[i]+".input";
+		fileName = "color/"+s[i]+".input";
 
-		cout << "Enter filename" << endl;
-		cin >> fileName;
+		//cout << "Enter filename" << endl;
+		//cin >> fileName;
 
 		fin.open(fileName.c_str());
 		if (!fin)
@@ -319,7 +423,7 @@ int main()
 
 			cout << "Num nodes: " << num_vertices(g) << endl;
 			cout << "Num edges: " << num_edges(g) << endl;
-			conflicts = exhaustiveColoring(g,colors,600);
+			conflicts = greedy(g, colors);
 			writeOutToFile(g, conflicts, s[i]);
 			cout << endl;
 
