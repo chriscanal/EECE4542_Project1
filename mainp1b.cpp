@@ -232,7 +232,32 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 	return degree;
 }
 
-pair<int, int> getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
+int getConflicts(Graph &g)
+{
+	int conflicts = 0;
+
+	// Returns the target vertex of edge e.
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
+
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+
+	// Loop over all edges in the graph
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
+	{
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
+
+		if (g[targetNode].color == g[sourceNode].color)
+		{
+			conflicts++;
+		}
+	}
+
+	return conflicts;
+}
+
+int getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
 {
 	vector<int> colorConflicts(colors, 0);
 	int color = -1;
@@ -260,13 +285,17 @@ pair<int, int> getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
 		{
 			color = i;
 		}
-		else if (colorConflicts[i] < colorConflicts[color])
+
+		else
 		{
-			color = i;
+			if (colorConflicts[i] < colorConflicts[color])
+			{
+				color = i;
+			}
 		}
 	}
 
-	return make_pair<int,int>(color, colorConflicts[color]);
+	return color;
 }
 
 void addColor(int color, Graph::vertex_descriptor &v, Graph &g)
@@ -361,20 +390,17 @@ vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descri
 int greedy(Graph &g, int colors)
 {
 	cout << "\ninside the greedy";
-	int conflicts = 0;
+	int color = -1;
 	vector<Graph::vertex_descriptor> vertexVector = getVertices(g);
 	vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
-	pair<int, int> color_colorConflicts;
-
 
 	for(int i = 0; i < vertexVector.size(); i++)
 	{
-		color_colorConflicts = getBestColor(colors, vertexVector[i], g);
-		addColor(color_colorConflicts.first, vertexVector[i], g);
-		conflicts = conflicts + color_colorConflicts.second;
+		color = getBestColor(colors, vertexVector[i], g);
+		addColor(color, vertexVector[i], g);
 	}
 
-	return conflicts;
+	return getConflicts(g);
 }
 
 int main()
