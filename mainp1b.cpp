@@ -180,6 +180,88 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	return minConflicts;
 }
 
+int getDegree(Graph::vertex_descriptor vertex1, Graph &g){
+	return 1;
+}
+void quickHelper(vector< Graph::vertex_descriptor > *a, Graph &g, int left, int right)
+//helper for recursion in quicksort
+{
+	int i = left, j = right;
+	Graph::vertex_descriptor tmp;
+	Graph::vertex_descriptor pivot = a->at((left + right) / 2);
+
+	//partition
+	while (i <= j)
+	{
+		while (getDegree(a->at(i), g) < getDegree(pivot), g) //determines how many are less than pivot
+			i++;
+
+		while (getDegree(a->at(i), g) > getDegree(pivot), g) //determines how many are more than pivot
+			j--;s
+
+		if (i <= j)
+		//checks how the list was divided around pivot, inserts in list
+		{
+			tmp = a->at(i);
+			a->at(i) = a->at(j);
+			a->at(j) = tmp;
+			i++;
+			j--;
+		}
+	}
+
+	if (left < j)
+		quickHelper(a, left, j); //recurs on quickHelper
+
+	if (i < right)
+		quickHelper(a, i, right); //recurs on quickHelper
+
+} //end of quick helper
+
+vector< Graph::vertex_descriptor > quickSort(Graph &g)
+//quicksort function
+{
+	int left = 0;
+	int right = num_vertices(g) - 1;
+	int i = left, j = right;
+	Graph::vertex_descriptor tmp;
+	vector< Graph::vertex_descriptor > vertexVector(g.getVertexVector());
+	Graph::vertex_descriptor pivot = vertexVector.at((left + right) / 2);
+
+	//partition
+	while (i <= j)
+	//while size of left is less than size of right
+	{
+		while (getDegree(vertexVector.at(i), g) < getDegree(pivot, g)) //counts strings less than pivot
+			i++;
+
+		while (getDegree(vertexVector.at(i), g) > getDegree(pivot, g)) //strings greater than pivot
+			j--;
+
+		if (i <= j)
+		//if left is less than right
+		{
+			tmp = vertexVector.at(i);
+			vertexVector.at(i) = vertexVector.at(j);
+			vertexVector.at(j) = tmp;
+			i++;
+			j--;
+
+		} //end of if left is less than right
+
+	} //end of while left is less than right
+
+	if (left < j) //if left size is less than number less than pivot
+		quickHelper(&vertexVector, left, j);
+
+	if (i < right) //if right size is less than number greater than pivot
+		quickHelper(&vertexVector, i, right);
+
+
+	return vertexVector;
+} //end of quicksort
+
+
 void writeOutToFile(Graph &g, int conflicts, std::string inputFileName)
 {
 	std::string fileName = inputFileName+".output";
