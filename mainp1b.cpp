@@ -218,12 +218,19 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 {
 	int degree = 0;
 
+	// Returns the target vertex of edge e.
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
+
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+
+	// Loop over all edges in the graph
 	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
 	{
 		targetNode = target(*eItr, g);
 		sourceNode = source(*eItr, g);
 
-		if (g[targetNode] == v || g[sourceNode] == v)
+		if (targetNode == v || sourceNode == v)
 		{
 			degree++;
 		}
@@ -236,18 +243,23 @@ std::vector<vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, 
 {
 	vector<Graph::vertex_descriptor> nodes;
 
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
+
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+
 	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
 	{
 		targetNode = target(*eItr, g);
 		sourceNode = source(*eItr, g);
 
-		if (g[targetNode] == v)
+		if (targetNode == v)
 		{
 			nodes.push_back(sourceNode);
 		}
 		else
 		{
-			if (g[sourceNode] == v)
+			if (sourceNode == v)
 			{
 				nodes.push_back(targetNode);
 			}
@@ -284,44 +296,51 @@ int getConflicts(Graph &g)
 
 int getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
 {
-	vector<int> colorConflicts(colors, 0);
-	int color = -1;
+	int color = 1;
 
-	// Get a pair containing iterators pointing to the beginning and end of the
-	// list of nodes adjacent to node v
-	pair<Graph::adjacency_iterator, Graph::adjacency_iterator>
-	vItrRange = adjacent_vertices(v, g);
+	// Returns the target vertex of edge e.
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
 
-	// Loop over adjacent nodes in the graph
-	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+
+	// Loop over all edges in the graph
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
 	{
-		color = g[*vItr].color;
-		if (color >= 0 && color < colors)
-		{
-			colorConflicts[color]++;
-		}
-	}
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
 
-	color = -1;
-
-	for (int i = 0; colorConflicts.size(); i++)
-	{
-		if (color == -1)
+		if (targetNode == v)
 		{
-			color = i;
+			if (g[sourceNode].color == g[v].color)
+			{
+				color++;
+				if(color == colors)
+				{
+					return 0;
+				}
+			}
 		}
 
 		else
 		{
-			if (colorConflicts[i] < colorConflicts[color])
+			if (sourceNode == v)
 			{
-				color = i;
+				if (g[targetNode].color == g[v].color)
+				{
+					color++;
+					if(color == colors)
+					{
+						return 0;
+					}
+				}
 			}
 		}
 	}
 
 	return color;
 }
+
 
 void addColor(int color, Graph::vertex_descriptor &v, Graph &g)
 {
@@ -376,7 +395,6 @@ void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int r
 vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descriptor>& vertexVector)
 //quicksort function
 {
-	/*
 	int i = 0, j = 1;
 	int min = 0;
 	int location = 0;
@@ -408,7 +426,7 @@ vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descri
 
 	cout << "The sort finished";
 	return newVertexVector;
-	*/
+
 	return vertexVector;
 } //end of quicksort
 
@@ -417,12 +435,13 @@ int greedy(Graph &g, int colors)
 	cout << "\ninside the greedy";
 	int color = -1;
 	vector<Graph::vertex_descriptor> vertexVector = getVertices(g);
-	vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
+	//vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
 
 	for(int i = 0; i < vertexVector.size(); i++)
 	{
 		color = getBestColor(colors, vertexVector[i], g);
 		addColor(color, vertexVector[i], g);
+		cout << "\nDegree " << getDegree(vertexVector[i], g);
 	}
 
 	return getConflicts(g);
