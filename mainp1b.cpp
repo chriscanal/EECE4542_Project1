@@ -218,18 +218,43 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 {
 	int degree = 0;
 
-	// Get a pair containing iterators pointing to the beginning and end of the
-	// list of nodes adjacent to node v
-	pair<Graph::adjacency_iterator, Graph::adjacency_iterator>
-	vItrRange = adjacent_vertices(v, g);
-
-	// Loop over adjacent nodes in the graph
-	for (Graph::adjacency_iterator vItr = vItrRange.first; vItr != vItrRange.second; ++vItr)
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
 	{
-		degree++;
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
+
+		if (g[targetNode] == v || g[sourceNode] == v)
+		{
+			degree++;
+		}
 	}
 
 	return degree;
+}
+
+std::vector<vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, Graph &g)
+{
+	vector<Graph::vertex_descriptor> nodes;
+
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
+	{
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
+
+		if (g[targetNode] == v)
+		{
+			nodes.push_back(sourceNode);
+		}
+		else
+		{
+			if (g[sourceNode] == v)
+			{
+				nodes.push_back(targetNode);
+			}
+		}
+	}
+
+	return nodes;
 }
 
 int getConflicts(Graph &g)
@@ -327,7 +352,7 @@ void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int r
 		if (i <= j)
 		//checks how the list was divided around pivot, inserts in list
 		{
-			cout << "\nWhat is ggiong on";
+			cout << "\nWhat is going on";
 			cout << "\nin if statment";
 			cout << "\n i =" << i;
 			cout << "\n j =" << j;
