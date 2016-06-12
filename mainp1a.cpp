@@ -236,6 +236,92 @@ void printSack(knapsack theSmackSack)
 	cout << endl;
 }
 
+Bound branchAndBound(knapsack k, float maxTime)
+{
+	std::cout << "\nClock time: " << clock() << std::endl;
+    clock_t beginTime,currentTime;
+	beginTime = clock();
+	float timePassed = 0.0;
+
+	std::priority_queue<int> boundsQue;
+	Bound firstBound = k.bound();
+	Bound currentBound = k.bound();
+	boundsQue.push(firstBound);
+
+	int bestValue = 0;
+	Bound bestBound;
+
+	while (boundsQue.size() > 0 && timePassed < maxTime)
+	{
+		currentBound = boundsQue.front();
+		boundsQue.pop();
+
+		if (currentBound.fathomed() == false)
+		{
+			zeroCase = new Bound;
+			oneCase = new Bound;
+
+			zeroCase = currentBound;
+			oneCase = currentBound;
+
+			zeroCase.setFractionalItem(0);
+			oneCase.setFractionalItem(1);
+
+			zeroCase.addBestItems();
+			oneCase.addBestItems();
+
+			if (zeroCase.getValue() > bestValue)
+			{
+				bestValue = zeroCase.getValue();
+				bestbound = zeroCase;
+			}
+			if (oneCase.getValue() > bestValue)
+			{
+				bestValue = oneCase.getValue();
+				bestbound = oneCase;
+			}
+
+			zeroCase.addFractionalItem();
+			oneCase.addFractionalItem();
+
+			if (zeroCase.fathomed() == false && zeroCase.getValue() > bestValue)
+			{
+				boundsQue.push(zeroCase);
+			} else {
+				if (zeroCase.getValue() > bestValue)
+				{
+					bestValue = zeroCase.getValue();
+					bestbound = zeroCase;
+				}
+			}
+
+			if (oneCase.fathomed() == false && oneCase.getValue() > oneCase)
+			{
+				boundsQue.push(oneCase);
+			} else {
+				if (oneCase.getValue() > bestValue)
+				{
+					bestValue = oneCase.getValue();
+					bestbound = oneCase;
+				}
+			}
+		} else {
+			if (currentBound.getValue() > bestValue)
+			{
+				bestValue = currentBound.getValue();
+				bestbound = currentBound;
+			}
+		}
+		currentTime = clock();
+		diff = ((float)currentTime-(float)beginTime);
+		timePassed = (diff / CLOCKS_PER_SEC);
+	}
+	return bestBound;
+}
+
+fathoming: is weight to large or bound is too small
+
+
 int main()
 {
 	char x;
@@ -281,7 +367,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			greedyKnapsack(k);
+			branchAndBound(k, 600);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);
