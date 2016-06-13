@@ -2,6 +2,7 @@
 // Version f08.1
 #include <iostream>
 #include "item.h"
+#include "bound.h"
 
 using namespace std;
 
@@ -9,7 +10,7 @@ class knapsack
 {
 public:
         knapsack(ifstream &fin);
-        knapsack( knapsack &);
+        knapsack(knapsack &);
         int getCost(int) const;
         int getValue(int) const;
         int getCost() const;
@@ -23,7 +24,9 @@ public:
         vector<bool> getSelected();
         vector<Item> getItems();
         void setItems(vector<Item> items);
-
+        Bound bound();
+        Bound bound(int fractionalItemIndex);
+        void sortItemsByIndicies();
 
 private:
         int numObjects;
@@ -34,6 +37,8 @@ private:
         // vector<bool> selected;
         int totalValue;
         int totalCost;
+        void quickSort();
+        void quickSortHelper(int left, int right);
 };
 
 knapsack::knapsack(ifstream &fin)
@@ -233,4 +238,86 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
 void knapsack::setItems(vector<Item> items)
 {
     this->items = items;
+}
+
+void knapsack::quickSortHelper(int left, int right)
+{
+    int i = left, j = right;
+    Item tmp;
+    Item pivot = items[(left + right) / 2];
+
+    //partition
+    while (i <= j)
+    {
+        while (items[i].getValueCostRatio() < pivot.getValueCostRatio()) //determines how many are less than pivot
+            i++;
+
+        while (items[j].getValueCostRatio() > pivot.getValueCostRatio()) //determines how many are more than pivot
+            j--;
+
+        if (i <= j)
+        //checks how the list was divided around pivot, inserts in list
+        {
+            tmp = items[i];
+            items[i] = items[j];
+            items[j] = tmp;
+            i++;
+            j--;
+        }
+    }
+
+    if (left < j)
+        quickHelper(left, j); //recurs on quickHelper
+
+    if (i < right)
+        quickHelper(i, right); //recurs on quickHelper
+
+}
+
+void knapsack::quickSort()
+{
+    int left = 0;
+	int right = getNumObjects() - 1;
+	int i = left, j = right;
+	Item tmp;
+	Item pivot = items.at((left + right) / 2);
+
+	//partition
+	while (i <= j)
+	//while size of left is less than size of right
+	{
+		while (items.at(i).getValueCostRatio() < pivot.getValueCostRatio()) //counts strings less than pivot
+			i++;
+
+		while (items.at(j).getValueCostRatio() > pivot.getValueCostRatio()) //strings greater than pivot
+			j--;
+
+		if (i <= j)
+		//if left is less than right
+		{
+			tmp = items.at(i);
+			items.at(i) = items.at(j);
+			items.at(j) = tmp;
+			i++;
+			j--;
+		} //end of if left is less than right
+
+	} //end of while left is less than right
+
+	if (left < j) //if left size is less than number less than pivot
+		quickHelper(left, j);
+
+	if (i < right) //if right size is less than number greater than pivot
+		quickHelper(i, right);
+}
+
+void knapsack::sortItemsByIndicies()
+{
+    quickSort();
+}
+
+Bound knapsack::bound()
+{
+    sortItemsByIndicies();
+    
 }
