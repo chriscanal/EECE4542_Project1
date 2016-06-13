@@ -25,7 +25,7 @@ public:
         vector<Item> getItems();
         void setItems(vector<Item> items);
         Bound bound();
-        Bound bound(int fractionalItemIndex);
+        Bound bound(Bound &b, bool upperBound?);
         void sortItemsByIndicies();
 
 private:
@@ -238,6 +238,15 @@ ostream &operator<<(ostream &ostr, const knapsack &k)
 void knapsack::setItems(vector<Item> items)
 {
     this->items = items;
+    numObjects = items.size();
+
+    for (int i = 0; i < numObjects; i++)
+    {
+        unSelect(i);
+    }
+
+    totalCost = 0;
+    totalValue = 0;
 }
 
 void knapsack::quickSortHelper(int left, int right)
@@ -319,5 +328,58 @@ void knapsack::sortItemsByIndicies()
 Bound knapsack::bound()
 {
     sortItemsByIndicies();
-    
+
+
+    vector<float> fractions(numObjects);
+
+    vector<int> includedIndicies;
+    vector<int> nonIncludedIndicies;
+    int fractionalItemIndex = -1;
+    float fractionalTotalValue;
+
+    for (int i = 0; i < numObjects; i++)
+    {
+        unSelect(i);
+    }
+
+    for (int i = 0; i < numObjects; i++)
+    {
+        if (totalCost + getCost(i) <= costLimit)
+        {
+            select(i);
+            includedIndicies.push_back(i);
+        }
+        else
+        {
+            if (totalCost == costLimit)
+            {
+                nonIncludedIndicies.push_back(i);
+            }
+            else
+            {
+                fractionalItemIndex = i;
+                fractionalTotalValue = (float)totalValue +  (float)((costLimit - totalCost) / getCost(i)) * (float)getValue(i);
+            }
+        }
+    }
+
+    // Build a bound with includedIndicies, nonIncludedIndicies, fractionalItemIndex, fractionalTotalValue
+}
+
+Bound knapsack::bound(Bound &b, bool isUpperBound)
+{
+    vector<float> fractions(numObjects);
+
+    vector<int> includedIndicies;
+    vector<int> nonIncludedIndicies;
+    vector<int> permanentSet; // get from Bound b
+    int oldFractionalItemIndex; // check if it equals to numObjects
+    int fractionalItemIndex;
+
+    float fractionalTotalValue;
+
+
+
+    permanentSet[oldFractionalItemIndex] = (isUpperBound)?
+
 }
