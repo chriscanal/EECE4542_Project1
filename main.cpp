@@ -361,7 +361,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			Bound b = branchAndBound(k, 600);
+			branchAndBound(k, 600);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);

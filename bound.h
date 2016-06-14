@@ -7,20 +7,25 @@ class Bound
 private:
     int fractionalItemIndex;
     float fractionalTotalValue;
+    int regularTotalCost;
     bool isValid;
+    vector<int> includedIndicies;
     vector<int> permanentSet;
     bool isFathomed;
 
 public:
     Bound();
-    Bound(int fractionalItemIndex, float fractionalTotalValue,
-        bool isValid, vector<int> &permanentSet);
-    Bound(const Bound &obj);
+    Bound(vector<int> includedIndicies, int fractionalItemIndex,
+        float fractionalTotalValue, int regularTotalCost, bool isValid,
+        vector<int> permanentSet);
+    //Bound(Bound &obj);
 
     bool fathomed() const;
     vector<int> getPermanentSet();
-    int getFractionalItemIndex();
-    float getFractionalItemValue();
+    int getFractionalItemIndex() const;
+    float getFractionalItemValue() const;
+    int getRegularTotalCost() const;
+    vector<int> getIncludedIndicies();
 
     bool valid() const
     {
@@ -28,11 +33,14 @@ public:
     }
 };
 
-Bound::Bound(int fractionalItemIndex, float fractionalTotalValue,
-    bool isValid, vector<int> &permanentSet)
+Bound::Bound(vector<int> includedIndicies, int fractionalItemIndex,
+    float fractionalTotalValue, int regularTotalCost, bool isValid,
+    vector<int> permanentSet)
 {
+    this->includedIndicies = includedIndicies;
     this->fractionalItemIndex = fractionalItemIndex;
     this->fractionalTotalValue = fractionalTotalValue;
+    this->regularTotalCost = regularTotalCost;
     this->isValid = isValid;
     this->permanentSet = permanentSet;
     isFathomed = fractionalItemIndex == -1;
@@ -44,7 +52,8 @@ Bound::Bound()
 }
 
 //copy constructor
-Bound(const Bound &obj)
+/*
+Bound::Bound(Bound & obj)
 {
     fractionalItemIndex = obj.getFractionalItemIndex();
     fractionalTotalValue = obj.getFractionalItemValue();
@@ -52,6 +61,7 @@ Bound(const Bound &obj)
     permanentSet = obj.getPermanentSet();
     isFathomed = false;
 }
+*/
 
 bool Bound::fathomed() const
 {
@@ -63,12 +73,47 @@ vector<int> Bound::getPermanentSet()
     return permanentSet;
 }
 
-int Bound::getFractionalItemIndex()
+vector<int> Bound::getIncludedIndicies()
+{
+    return includedIndicies;
+}
+
+int Bound::getFractionalItemIndex() const
 {
     return fractionalItemIndex;
 }
 
-float Bound::getFractionalItemValue()
+float Bound::getFractionalItemValue() const
 {
     return fractionalTotalValue;
+}
+
+int Bound::getRegularTotalCost() const
+{
+    return regularTotalCost;
+}
+
+bool operator<(const Bound &b1, const Bound &b2)
+{
+    return b1.getFractionalItemValue() < b2.getFractionalItemValue();
+}
+
+bool operator>(const Bound &b1, const Bound &b2)
+{
+   return b1.getFractionalItemValue() > b2.getFractionalItemValue();
+}
+
+bool operator==(const Bound &b1, const Bound &b2)
+{
+   return b1.getFractionalItemValue() == b2.getFractionalItemValue();
+}
+
+bool operator<=(const Bound &b1, const Bound &b2)
+{
+   return b1.getFractionalItemValue() <= b2.getFractionalItemValue();
+}
+
+bool operator>=(const Bound &b1, const Bound &b2)
+{
+   return b1.getFractionalItemValue() >= b2.getFractionalItemValue();
 }
