@@ -265,46 +265,42 @@ Bound branchAndBound(knapsack k, float maxTime)
 			zeroCase = k.bound(currentBound, false);
 			oneCase = k.bound(currentBound, true);
 
-			if (zeroCase.getValue() > bestValue)
+			if (zeroCase.getRegularTotalValue() > bestValue)
 			{
 				bestValue = zeroCase.getValue();
 				bestbound = zeroCase;
 			}
-			if (oneCase.getValue() > bestValue)
+			if (oneCase.getRegularTotalValue() > bestValue)
 			{
-				bestValue = oneCase.getValue();
+				bestValue = oneCase.getRegularTotalValue();
 				bestbound = oneCase;
 			}
-			/*
-			zeroCase.addFractionalItem();
-			oneCase.addFractionalItem();
 
-			if (zeroCase.fathomed() == false && zeroCase.getValue() > bestValue)
+			if (zeroCase.fathomed() == false && zeroCase.getFractionalItemValue() > bestValue)
 			{
 				boundsQue.push(zeroCase);
 			} else {
-				if (zeroCase.getValue() > bestValue)
+				if (zeroCase.getRegularTotalValue() > bestValue)
 				{
-					bestValue = zeroCase.getValue();
+					bestValue = zeroCase.getRegularTotalValue();
 					bestbound = zeroCase;
 				}
 			}
 
-			if (oneCase.fathomed() == false && oneCase.getValue() > oneCase)
+			if (oneCase.fathomed() == false && oneCase.getFractionalItemValue() > oneCase)
 			{
 				boundsQue.push(oneCase);
 			} else {
-				if (oneCase.getValue() > bestValue)
+				if (oneCase.getRegularTotalValue() > bestValue)
 				{
-					bestValue = oneCase.getValue();
+					bestValue = oneCase.getRegularTotalValue();
 					bestbound = oneCase;
 				}
 			}
-			*/
 		} else {
-			if (currentBound.getValue() > bestValue)
+			if (currentBound.getRegularTotalValue() > bestValue)
 			{
-				bestValue = currentBound.getValue();
+				bestValue = currentBound.getRegularTotalValue();
 				bestbound = currentBound;
 			}
 		}
@@ -362,7 +358,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			branchAndBound(k, 600);
+			branchAndBound(k, 10);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);
