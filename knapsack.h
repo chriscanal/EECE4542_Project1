@@ -429,7 +429,7 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
 
     isValid = fractionalTotalValue <= (float)costLimit;
 
-    return bound(includedIndicies, fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
+    return bound(includedIndicies, fractionalItemIndex, fractionalTotalValue, regularTotalCost, isValid, permanentSet);
 }
 
 void knapsack::setItems(vector<int> includedIndicies)

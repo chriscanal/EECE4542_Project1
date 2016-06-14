@@ -71,30 +71,30 @@ float Bound::getFractionalItemValue()
 
 int Bound::getRegularTotalCost()
 {
-    return regularTotalCost
+    return regularTotalCost;
 }
 
-bool operator<(const bound &b1, const bound &b2)
+bool operator<(const Bound &b1, const Bound &b2)
 {
-    b1.getFractionalItemValue() < b2.getFractionalItemValue()
+    b1.getFractionalItemValue() < b2.getFractionalItemValue();
 }
 
-bool operator>(const bound &b1, const bound &b2)
+bool operator>(const Bound &b1, const Bound &b2)
 {
-   b1.getFractionalItemValue() > b2.getFractionalItemValue()
+   b1.getFractionalItemValue() > b2.getFractionalItemValue();
 }
 
-bool operator==(const bound &b1, const bound &b2)
+bool operator==(const Bound &b1, const Bound &b2)
 {
-   b1.getFractionalItemValue() == b2.getFractionalItemValue()
+   b1.getFractionalItemValue() == b2.getFractionalItemValue();
 }
 
-bool operator<=(const bound &b1, const bound &b2)
+bool operator<=(const Bound &b1, const Bound &b2)
 {
-   b1.getFractionalItemValue() <= b2.getFractionalItemValue()
+   b1.getFractionalItemValue() <= b2.getFractionalItemValue();
 }
 
-bool operator>=(const bound &b1, const bound &b2)
+bool operator>=(const Bound &b1, const Bound &b2)
 {
-   b1.getFractionalItemValue() >= b2.getFractionalItemValue()
+   b1.getFractionalItemValue() >= b2.getFractionalItemValue();
 }
