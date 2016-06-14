@@ -237,7 +237,11 @@ Bound branchAndBound(knapsack k, float maxTime)
 	std::cout << "\nClock time: " << clock() << std::endl;
     clock_t beginTime,currentTime;
 	beginTime = clock();
+	float diff;
 	float timePassed = 0.0;
+
+	Bound zeroCase;
+	Bound oneCase;
 
 	std::priority_queue<Bound> boundsQue;
 	Bound firstBound = k.bound();
@@ -247,22 +251,19 @@ Bound branchAndBound(knapsack k, float maxTime)
 
 	Bound bestBound;
 	Bound currentBound;
-	/*
+
 	while (boundsQue.size() > 0 && timePassed < maxTime)
 	{
-		currentBound = boundsQue.front();
+		currentBound = boundsQue.top();
 		boundsQue.pop();
 
 		if (currentBound.fathomed() == false)
 		{
-			zeroCase = new Bound;
-			oneCase = new Bound;
+
+
 
 			zeroCase = k.bound(currentBound, false);
 			oneCase = k.bound(currentBound, true);
-
-			zeroCase.addBestItems();
-			oneCase.addBestItems();
 
 			if (zeroCase.getValue() > bestValue)
 			{
@@ -274,7 +275,7 @@ Bound branchAndBound(knapsack k, float maxTime)
 				bestValue = oneCase.getValue();
 				bestbound = oneCase;
 			}
-
+			/*
 			zeroCase.addFractionalItem();
 			oneCase.addFractionalItem();
 
@@ -299,6 +300,7 @@ Bound branchAndBound(knapsack k, float maxTime)
 					bestbound = oneCase;
 				}
 			}
+			*/
 		} else {
 			if (currentBound.getValue() > bestValue)
 			{
@@ -310,7 +312,6 @@ Bound branchAndBound(knapsack k, float maxTime)
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
-	*/
 	return bestBound;
 }
 //fathoming: is weight to large or bound is too small
