@@ -5,38 +5,53 @@ using namespace std;
 class Bound
 {
 private:
-    float value;
-    int cost;
     int fractionalItemIndex;
-    std::vector<int> permanentSet;
-    std::vector<int> included;
+    float fractionalTotalValue;
+    bool isValid;
+    vector<int> permanentSet;
+    bool isFathomed = false;
+
 public:
-    Bound();
+    Bound(int fractionalItemIndex, float fractionalTotalValue,
+        bool isValid, vector<int> &permanentSet);
 
     boolean fathomed() const;
-    void setFractionalItem(int status);
-    void addBestItems();
-    void addFractionalItem();
+    vector<int> getPermanentSet();
+    int getFractionalItemIndex();
+    float getFractionalItemValue();
+
+    boolean valid() const
+    {
+        return isValid;
+    }
 };
 
-Bound::Bound()
+Bound::Bound(int fractionalItemIndex, float fractionalTotalValue,
+    bool isValid, vector<int> &permanentSet)
 {
-
+    this->fractionalItemIndex = fractionalItemIndex;
+    this->fractionalTotalValue = fractionalTotalValue;
+    this->isValid = isValid;
+    this->permanentSet = permanentSet;
+    isFathomed = fractionalItemIndex == -1;
 }
 
 boolean Bound::fathomed() const
 {
-
+    return isFathomed;
 }
-void Bound::setFractionalItem(int status)
-{
 
+vector<int> Bound::getPermanentSet()
+{
+    return permanentSet;
 }
-void Bound::addBestItems()
-{
 
+int Bound::getFractionalItemIndex()
+{
+    return fractionalItemIndex;
 }
-void Bound::addFractionalItem()
-{
 
+float Bound::getFractionalItemValue()
+{
+    return fractionalTotalValue;
 }
