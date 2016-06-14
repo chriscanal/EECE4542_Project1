@@ -329,13 +329,12 @@ Bound knapsack::bound()
 {
     sortItemsByIndicies();
 
-
-    vector<float> fractions(numObjects);
-
     vector<int> includedIndicies;
     vector<int> nonIncludedIndicies;
     int fractionalItemIndex = -1;
     float fractionalTotalValue;
+    bool isValid;
+    vector<int> permanentSet (numObjects, -1);
 
     for (int i = 0; i < numObjects; i++)
     {
@@ -363,23 +362,65 @@ Bound knapsack::bound()
         }
     }
 
-    // Build a bound with includedIndicies, nonIncludedIndicies, fractionalItemIndex, fractionalTotalValue
+    isValid = fractionalTotalValue <= (float)costLimit;
+
+    // Build a bound with includedIndicies, nonIncludedIndicies, fractionalItemIndex, fractionalTotalValue, isValid
 }
 
 Bound knapsack::bound(Bound &b, bool isUpperBound)
 {
-    vector<float> fractions(numObjects);
-
     vector<int> includedIndicies;
     vector<int> nonIncludedIndicies;
-    vector<int> permanentSet; // get from Bound b
-    int oldFractionalItemIndex; // check if it equals to numObjects
-    int fractionalItemIndex;
-
+    int fractionalItemIndex = -1;
     float fractionalTotalValue;
+    bool isValid;
 
+    vector<int> permanentSet (b.getPermanentSet()); // get from Bound b
+    int oldFractionalItemIndex; // get from Bound b, check if it equals to numObjects
 
+    permanentSet[oldFractionalItemIndex] = (isUpperBound)? 1: 0;
 
-    permanentSet[oldFractionalItemIndex] = (isUpperBound)?
+    for (int i = 0; i < numObjects; i++)
+    {
+        if (permanentSet[i] == 1)
+        {
+            select(i);
+            includedIndicies.push_back(i);
+        }
+        else
+        {
+            if (permanentSet[i] == 0)
+            {
+                nonIncludedIndicies.push_back(i);
+            }
+            unSelect(i);
+        }
+    }
 
+    for (int i = 0; i < numObjects; i++)
+    {
+        if (permanentSet[i] == -1)
+        {
+            if (totalCost + getCost(i) <= costLimit)
+            {
+                select(i);
+                includedIndicies.push_back(i);
+            }
+            else
+            {
+                if (totalCost == costLimit)
+                {
+                    nonIncludedIndicies.push_back(i);
+                }
+                else
+                {
+                    fractionalItemIndex = i;
+                    fractionalTotalValue = (float)totalValue +  (float)((costLimit - totalCost) / getCost(i)) * (float)getValue(i);
+                }
+            }
+        }
+    }
+
+    isValid = fractionalTotalValue <= (float)costLimit;
+    // Build a bound with includedIndicies, nonIncludedIndicies, fractionalItemIndex, fractionalTotalValue, isValid
 }

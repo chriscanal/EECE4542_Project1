@@ -5,86 +5,58 @@ using namespace std;
 class Bound
 {
 private:
-    int value;
-    int cost;
-    bool selected;
-public:
-    Item();
-    Item(int value, int cost, bool selected);
-    int getCost() const;
-    int getValue() const;
-    void select();
-    void unSelect();
-    bool isSelected() const;
-    float getValueCostRatio() const;
-    void setValue(int newValue);
-    void setCost(int newCost);
+    vector<int> includedIndicies;
+    vector<int> nonIncludedIndicies;
+    int fractionalItemIndex;
+    float fractionalTotalValue;
+    bool isValid;
+    vector<int> permanentSet;
 
-    //operator Overloaded
-    void operator=(const Item &newItem)
-    {
-        value = newItem.getValue();
-        cost = newItem.getCost();
-        selected = newItem.isSelected();
-    }
+public:
+    Bound(vector<int> &includedIndicies, vector<int> &nonIncludedIndicies,
+        int fractionalItemIndex, float fractionalTotalValue, bool isValid,
+        vector<int> &permanentSet);
+
+    boolean fathomed() const;
+    void setFractionalItem(int status);
+    vector<int> getPermanentSet();
+    int getFractionalItemIndex();
+    float getFractionalItemValue();
 };
 
-Item::Item()
+Bound::Bound(vector<int> &includedIndicies, vector<int> &nonIncludedIndicies,
+    int fractionalItemIndex, float fractionalTotalValue, bool isValid,
+    vector<int> &permanentSet)
 {
-    this->value = 0;
-    this->cost = 0;
-    this->selected = false;
+    this->includedIndicies = includedIndicies;
+    this->nonIncludedIndicies = nonIncludedIndicies;
+    this->fractionalItemIndex = fractionalItemIndex;
+    this->fractionalTotalValue = fractionalTotalValue;
+    this->isValid = isValid;
+    this->permanentSet = permanentSet;
 }
 
-Item::Item(int value, int cost, bool selected)
+boolean Bound::fathomed() const
 {
-    this->value = value;
-    this->cost = cost;
-    this->selected = selected;
+
 }
 
-int Item::getValue() const
+void Bound::setFractionalItem(int status)
 {
-    return value;
+
 }
 
-int Item::getCost() const
+vector<int> Bound::getPermanentSet()
 {
-    return cost;
+    return permanentSet;
 }
 
-void Item::select()
+int Bound::getFractionalItemIndex()
 {
-    if (!selected)
-    {
-        selected = true;
-    }
+    return fractionalItemIndex;
 }
 
-void Item::unSelect()
+float Bound::getFractionalItemValue()
 {
-    if (selected)
-    {
-        selected = false;
-    }
-}
-
-bool Item::isSelected() const
-{
-    return selected;
-}
-
-float Item::getValueCostRatio() const
-{
-    return (float)value / (float)cost;
-}
-
-void Item::setValue(int newValue)
-{
-    value = newValue;
-}
-
-void Item::setCost(int newCost)
-{
-    cost = newCost;
+    return fractionalTotalValue;
 }
