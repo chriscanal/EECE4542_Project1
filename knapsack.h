@@ -25,7 +25,7 @@ public:
         vector<Item> getItems();
         void setItems(vector<Item> items);
         Bound bound();
-        Bound bound(Bound &b, bool upperBound?);
+        Bound bound(Bound &b, bool upperBound);
         void sortItemsByIndicies();
 
 private:
@@ -314,10 +314,10 @@ void knapsack::quickSort()
 	} //end of while left is less than right
 
 	if (left < j) //if left size is less than number less than pivot
-		quickHelper(left, j);
+		quickSortHelper(left, j);
 
 	if (i < right) //if right size is less than number greater than pivot
-		quickHelper(i, right);
+		quickSortHelper(i, right);
 }
 
 void knapsack::sortItemsByIndicies()
@@ -364,7 +364,7 @@ Bound knapsack::bound()
 
     isValid = fractionalTotalValue <= (float)costLimit;
 
-    return bound(fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
+    return Bound(fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
 }
 
 Bound knapsack::bound(Bound &b, bool isUpperBound)
@@ -418,5 +418,5 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
 
     isValid = fractionalTotalValue <= (float)costLimit;
 
-    return bound(fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
+    return Bound(fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
 }

@@ -17,13 +17,10 @@
 #include <time.h>
 #include <math.h>
 
-using namespace std;
-
 #include "d_except.h"
 #include "d_matrix.h"
 #include "knapsack.h"
 
-using namespace boost;
 using namespace std;
 
 void resetKnapsackSetSelection(knapsack &sack)
@@ -242,14 +239,15 @@ Bound branchAndBound(knapsack k, float maxTime)
 	beginTime = clock();
 	float timePassed = 0.0;
 
-	std::priority_queue<int> boundsQue;
+	std::priority_queue<Bound> boundsQue;
 	Bound firstBound = k.bound();
-	Bound currentBound = k.bound();
 	boundsQue.push(firstBound);
 
 	int bestValue = 0;
-	Bound bestBound;
 
+	Bound bestBound;
+	Bound currentBound;
+	/*
 	while (boundsQue.size() > 0 && timePassed < maxTime)
 	{
 		currentBound = boundsQue.front();
@@ -260,11 +258,8 @@ Bound branchAndBound(knapsack k, float maxTime)
 			zeroCase = new Bound;
 			oneCase = new Bound;
 
-			zeroCase = currentBound;
-			oneCase = currentBound;
-
-			zeroCase.setFractionalItem(0);
-			oneCase.setFractionalItem(1);
+			zeroCase = k.bound(currentBound, false);
+			oneCase = k.bound(currentBound, true);
 
 			zeroCase.addBestItems();
 			oneCase.addBestItems();
@@ -315,10 +310,10 @@ Bound branchAndBound(knapsack k, float maxTime)
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
+	*/
 	return bestBound;
 }
-
-fathoming: is weight to large or bound is too small
+//fathoming: is weight to large or bound is too small
 
 
 int main()
@@ -366,7 +361,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			branchAndBound(k, 600);
+			Bound b = branchAndBound(k, 600);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);

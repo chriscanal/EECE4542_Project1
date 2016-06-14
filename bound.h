@@ -9,18 +9,20 @@ private:
     float fractionalTotalValue;
     bool isValid;
     vector<int> permanentSet;
-    bool isFathomed = false;
+    bool isFathomed;
 
 public:
+    Bound();
     Bound(int fractionalItemIndex, float fractionalTotalValue,
         bool isValid, vector<int> &permanentSet);
+    Bound(const Bound &obj);
 
-    boolean fathomed() const;
+    bool fathomed() const;
     vector<int> getPermanentSet();
     int getFractionalItemIndex();
     float getFractionalItemValue();
 
-    boolean valid() const
+    bool valid() const
     {
         return isValid;
     }
@@ -36,7 +38,22 @@ Bound::Bound(int fractionalItemIndex, float fractionalTotalValue,
     isFathomed = fractionalItemIndex == -1;
 }
 
-boolean Bound::fathomed() const
+Bound::Bound()
+{
+    isFathomed = false;
+}
+
+//copy constructor
+Bound(const Bound &obj)
+{
+    fractionalItemIndex = obj.getFractionalItemIndex();
+    fractionalTotalValue = obj.getFractionalItemValue();
+    isValid = true;
+    permanentSet = obj.getPermanentSet();
+    isFathomed = false;
+}
+
+bool Bound::fathomed() const
 {
     return isFathomed;
 }
