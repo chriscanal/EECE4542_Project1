@@ -276,10 +276,10 @@ void knapsack::quickSortHelper(int left, int right)
     }
 
     if (left < j)
-        quickHelper(left, j); //recurs on quickHelper
+        quickSortHelper(left, j); //recurs on quickHelper
 
     if (i < right)
-        quickHelper(i, right); //recurs on quickHelper
+        quickSortHelper(i, right); //recurs on quickHelper
 
 }
 
@@ -329,8 +329,6 @@ Bound knapsack::bound()
 {
     sortItemsByIndicies();
 
-    vector<int> includedIndicies;
-    vector<int> nonIncludedIndicies;
     int fractionalItemIndex = -1;
     float fractionalTotalValue;
     bool isValid;
@@ -346,37 +344,37 @@ Bound knapsack::bound()
         if (totalCost + getCost(i) <= costLimit)
         {
             select(i);
-            includedIndicies.push_back(i);
         }
         else
         {
-            if (totalCost == costLimit)
-            {
-                nonIncludedIndicies.push_back(i);
-            }
-            else
+            if (totalCost < costLimit)
             {
                 fractionalItemIndex = i;
                 fractionalTotalValue = (float)totalValue +  (float)((costLimit - totalCost) / getCost(i)) * (float)getValue(i);
+                select(i);
+                break;
             }
         }
     }
 
+    if (fractionalItemIndex == -1)
+    {
+        fractionalTotalValue = (float)totalCost;
+    }
+
     isValid = fractionalTotalValue <= (float)costLimit;
 
-    // Build a bound with includedIndicies, nonIncludedIndicies, fractionalItemIndex, fractionalTotalValue, isValid
+    return bound(fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
 }
 
 Bound knapsack::bound(Bound &b, bool isUpperBound)
 {
-    vector<int> includedIndicies;
-    vector<int> nonIncludedIndicies;
     int fractionalItemIndex = -1;
     float fractionalTotalValue;
     bool isValid;
 
     vector<int> permanentSet (b.getPermanentSet()); // get from Bound b
-    int oldFractionalItemIndex; // get from Bound b, check if it equals to numObjects
+    int oldFractionalItemIndex = b.getFractionalItemIndex(); // get from Bound b, check if it equals to numObjects?
 
     permanentSet[oldFractionalItemIndex] = (isUpperBound)? 1: 0;
 
@@ -385,14 +383,9 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
         if (permanentSet[i] == 1)
         {
             select(i);
-            includedIndicies.push_back(i);
         }
         else
         {
-            if (permanentSet[i] == 0)
-            {
-                nonIncludedIndicies.push_back(i);
-            }
             unSelect(i);
         }
     }
@@ -404,23 +397,26 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
             if (totalCost + getCost(i) <= costLimit)
             {
                 select(i);
-                includedIndicies.push_back(i);
             }
             else
             {
-                if (totalCost == costLimit)
-                {
-                    nonIncludedIndicies.push_back(i);
-                }
-                else
+                if (totalCost < costLimit)
                 {
                     fractionalItemIndex = i;
                     fractionalTotalValue = (float)totalValue +  (float)((costLimit - totalCost) / getCost(i)) * (float)getValue(i);
+                    select(i);
+                    break;
                 }
             }
         }
     }
 
+    if (fractionalItemIndex == -1)
+    {
+        fractionalTotalValue = (float)totalCost;
+    }
+
     isValid = fractionalTotalValue <= (float)costLimit;
-    // Build a bound with includedIndicies, nonIncludedIndicies, fractionalItemIndex, fractionalTotalValue, isValid
+
+    return bound(fractionalItemIndex, fractionalTotalValue, isValid, permanentSet);
 }

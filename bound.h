@@ -5,45 +5,40 @@ using namespace std;
 class Bound
 {
 private:
-    vector<int> includedIndicies;
-    vector<int> nonIncludedIndicies;
     int fractionalItemIndex;
     float fractionalTotalValue;
     bool isValid;
     vector<int> permanentSet;
+    bool isFathomed = false;
 
 public:
-    Bound(vector<int> &includedIndicies, vector<int> &nonIncludedIndicies,
-        int fractionalItemIndex, float fractionalTotalValue, bool isValid,
-        vector<int> &permanentSet);
+    Bound(int fractionalItemIndex, float fractionalTotalValue,
+        bool isValid, vector<int> &permanentSet);
 
     boolean fathomed() const;
-    void setFractionalItem(int status);
     vector<int> getPermanentSet();
     int getFractionalItemIndex();
     float getFractionalItemValue();
+
+    boolean valid() const
+    {
+        return isValid;
+    }
 };
 
-Bound::Bound(vector<int> &includedIndicies, vector<int> &nonIncludedIndicies,
-    int fractionalItemIndex, float fractionalTotalValue, bool isValid,
-    vector<int> &permanentSet)
+Bound::Bound(int fractionalItemIndex, float fractionalTotalValue,
+    bool isValid, vector<int> &permanentSet)
 {
-    this->includedIndicies = includedIndicies;
-    this->nonIncludedIndicies = nonIncludedIndicies;
     this->fractionalItemIndex = fractionalItemIndex;
     this->fractionalTotalValue = fractionalTotalValue;
     this->isValid = isValid;
     this->permanentSet = permanentSet;
+    isFathomed = fractionalItemIndex == -1;
 }
 
 boolean Bound::fathomed() const
 {
-
-}
-
-void Bound::setFractionalItem(int status)
-{
-
+    return isFathomed;
 }
 
 vector<int> Bound::getPermanentSet()
