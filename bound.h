@@ -12,12 +12,13 @@ private:
     vector<int> includedIndicies;
     vector<int> permanentSet;
     bool isFathomed;
+    int regularTotalValue;
 
 public:
     Bound();
     Bound(vector<int> includedIndicies, int fractionalItemIndex,
-        float fractionalTotalValue, int regularTotalCost, bool isValid,
-        vector<int> permanentSet);
+        float fractionalTotalValue, int regularTotalValue, int regularTotalCost,
+        bool isValid, vector<int> permanentSet);
     //Bound(Bound &obj);
 
     bool fathomed() const;
@@ -25,6 +26,7 @@ public:
     int getFractionalItemIndex() const;
     float getFractionalItemValue() const;
     int getRegularTotalCost() const;
+    int getRegularTotalValue() const;
     vector<int> getIncludedIndicies();
 
     bool valid() const
@@ -34,13 +36,14 @@ public:
 };
 
 Bound::Bound(vector<int> includedIndicies, int fractionalItemIndex,
-    float fractionalTotalValue, int regularTotalCost, bool isValid,
-    vector<int> permanentSet)
+float fractionalTotalValue, int regularTotalValue, int regularTotalCost,
+bool isValid, vector<int> permanentSet)
 {
     this->includedIndicies = includedIndicies;
     this->fractionalItemIndex = fractionalItemIndex;
     this->fractionalTotalValue = fractionalTotalValue;
     this->regularTotalCost = regularTotalCost;
+    this->regularTotalValue = regularTotalValue;
     this->isValid = isValid;
     this->permanentSet = permanentSet;
     isFathomed = fractionalItemIndex == -1;
@@ -91,6 +94,11 @@ float Bound::getFractionalItemValue() const
 int Bound::getRegularTotalCost() const
 {
     return regularTotalCost;
+}
+
+int Bound::getRegularTotalValue() const
+{
+    return regularTotalValue;
 }
 
 bool operator<(const Bound &b1, const Bound &b2)
