@@ -7,6 +7,18 @@
 // Project 1a: Solving knapsack using exhaustive search
 //
 
+
+#include <string>
+#include <sstream>
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 #include <iostream>
 #include <stack>
 #include <limits.h>
@@ -349,7 +361,6 @@ int main()
 		if (!fin)
 		{
 			cerr << "Cannot open " << fileName << endl;
-			exit(1);
 		}
 
 		try
