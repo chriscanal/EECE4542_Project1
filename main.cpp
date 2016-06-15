@@ -232,7 +232,7 @@ void printSack(knapsack theSmackSack)
 	cout << endl;
 }
 
-Bound branchAndBound(knapsack k, float maxTime)
+void branchAndBound(knapsack &k, float maxTime)
 {
 	std::cout << "\nClock time: " << clock() << std::endl;
     clock_t beginTime,currentTime;
@@ -267,13 +267,13 @@ Bound branchAndBound(knapsack k, float maxTime)
 
 			if (zeroCase.getRegularTotalValue() > bestValue)
 			{
-				bestValue = zeroCase.getValue();
-				bestbound = zeroCase;
+				bestValue = zeroCase.getRegularTotalValue();
+				bestBound = zeroCase;
 			}
 			if (oneCase.getRegularTotalValue() > bestValue)
 			{
 				bestValue = oneCase.getRegularTotalValue();
-				bestbound = oneCase;
+				bestBound = oneCase;
 			}
 
 			if (zeroCase.fathomed() == false && zeroCase.getFractionalItemValue() > bestValue)
@@ -283,32 +283,32 @@ Bound branchAndBound(knapsack k, float maxTime)
 				if (zeroCase.getRegularTotalValue() > bestValue)
 				{
 					bestValue = zeroCase.getRegularTotalValue();
-					bestbound = zeroCase;
+					bestBound = zeroCase;
 				}
 			}
 
-			if (oneCase.fathomed() == false && oneCase.getFractionalItemValue() > oneCase)
+			if (oneCase.fathomed() == false && oneCase.getFractionalItemValue() > bestValue)
 			{
 				boundsQue.push(oneCase);
 			} else {
 				if (oneCase.getRegularTotalValue() > bestValue)
 				{
 					bestValue = oneCase.getRegularTotalValue();
-					bestbound = oneCase;
+					bestBound = oneCase;
 				}
 			}
 		} else {
 			if (currentBound.getRegularTotalValue() > bestValue)
 			{
 				bestValue = currentBound.getRegularTotalValue();
-				bestbound = currentBound;
+				bestBound = currentBound;
 			}
 		}
 		currentTime = clock();
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
-	return bestBound;
+	k.setItems(bestBound.getIncludedIndicies());
 }
 //fathoming: is weight to large or bound is too small
 
@@ -358,7 +358,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			branchAndBound(k, 10);
+			branchAndBound(k, 180);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);
