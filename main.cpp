@@ -372,11 +372,11 @@ int main()
 
 		catch (indexRangeError &ex)
 		{
-			cout << ex.what() << endl; exit(1);
+			cout << ex.what() << endl;
 		}
 		catch (rangeError &ex)
 		{
-			cout << ex.what() << endl; exit(1);
+			cout << ex.what() << endl;
 		}
 		fin.close();
 
