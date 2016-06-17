@@ -10,15 +10,6 @@
 
 #include <string>
 #include <sstream>
-namespace patch
-{
-    template < typename T > std::string to_string( const T& n )
-    {
-        std::ostringstream stm ;
-        stm << n ;
-        return stm.str() ;
-    }
-}
 #include <iostream>
 #include <stack>
 #include <limits.h>
@@ -216,16 +207,18 @@ void quickSort(knapsack &sacky)
 	sacky.setItems(itemVector);
 } //end of quicksort
 
-void greedyKnapsack(knapsack &k)
+Neighbor greedyKnapsack(knapsack &k, int j)
 {
-	quickSort(k);
+    k.unSelect(j);
 	for (int i = 0 ; i < k.getNumObjects() ; i++)
 	{
-		if (k.getCostLimit() >= k.getCost()+k.getCost(i))
+		if (k.getCostLimit() >= k.getCost()+k.getCost(i) && i != j)
 		{
 			k.select(i);
 		}
 	}
+    Neighbor newNeighbor(j, k.getValue(), k.getIndicies());
+    return newNeighbor;
 }
 
 void printSack(knapsack theSmackSack)
@@ -323,6 +316,29 @@ void branchAndBound(knapsack &k, float maxTime)
 	k.setItems(bestBound.getIncludedIndicies());
 }
 //fathoming: is weight to large or bound is too small
+
+Neighbor bestNeighbor(knapsack k)
+{
+    Neighbor newN;
+    Neighbor bestN = greedyKnapsack(k, k.getNumObjects()-1);;
+    quickSort(k);
+    for (int i = 0 ; i < k.getNumObjects() ; i++)
+    {
+        newN = greedyKnapsack(k,i);
+        if (newN.getValue() > bestN.getValue())
+        {
+            bestN = newN;
+        }
+    }
+    return bestN;
+}
+
+void steepestDecent(knapsack k)
+{
+    Neighbor currentN;
+    Neighbor nextN;
+    
+}
 
 
 int main()
