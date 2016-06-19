@@ -28,6 +28,7 @@ public:
         Bound bound(Bound &b, bool upperBound);
         void sortItemsByIndicies();
         void setItems(vector<int> includedIndicies);
+        vector<int> getIndicies() const;
 
 private:
         int numObjects;
@@ -448,4 +449,17 @@ void knapsack::setItems(vector<int> includedIndicies)
     {
         select(includedIndicies[i]);
     }
+}
+
+vector<int> knapsack::getIndicies() const
+{
+    vector<int> indicies;
+
+    for (int i = 0; i < numObjects; i++)
+    {
+        if (isSelected(i))
+            indicies.push_back(i);
+    }
+
+    return indicies;
 }
