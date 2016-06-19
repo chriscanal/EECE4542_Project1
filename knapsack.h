@@ -447,6 +447,7 @@ void knapsack::setItems(vector<int> includedIndicies)
 
     for (int i = 0; i < includedIndicies.size(); i++)
     {
+        cout << "\nThis is working: " << i;
         select(includedIndicies[i]);
     }
 }

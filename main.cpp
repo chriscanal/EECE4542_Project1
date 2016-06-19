@@ -208,19 +208,6 @@ void quickSort(knapsack &sacky)
 	sacky.setItems(itemVector);
 } //end of quicksort
 
-Neighbor greedyKnapsack(knapsack &k, int j)
-{
-    k.unSelect(j);
-	for (int i = 0 ; i < k.getNumObjects() ; i++)
-	{
-		if (k.getCostLimit() >= k.getCost()+k.getCost(i) && i != j)
-		{
-			k.select(i);
-		}
-	}
-    Neighbor newNeighbor(j, k.getValue(), k.getIndicies());
-    return newNeighbor;
-}
 
 void printSack(knapsack theSmackSack)
 {
@@ -318,14 +305,38 @@ void branchAndBound(knapsack &k, float maxTime)
 }
 //fathoming: is weight to large or bound is too small
 
-Neighbor bestNeighbor(knapsack k)
+Neighbor greedyKnapsack(knapsack &k, int j)
+{
+    k.unSelect(j);
+	for (int i = 0 ; i < k.getNumObjects() ; i++)
+	{
+		if (k.getCostLimit() >= k.getCost()+k.getCost(i) && i != j)
+		{
+			k.select(i);
+		}
+	}
+    Neighbor newNeighbor(j, k.getValue(), k.getIndicies());
+    cout << "\n---------This is a new Neighbor -------------";
+    for (int i = 0; i < newNeighbor.getIndicies().size() ; i++)
+    {
+        cout << newNeighbor.getIndicies()[i] << endl;
+    }
+    return newNeighbor;
+}
+
+
+Neighbor bestNeighbor(knapsack &k)
 {
     Neighbor newN;
     Neighbor bestN = greedyKnapsack(k, k.getNumObjects()-1);
-    quickSort(k);
     for (int i = 0 ; i < k.getNumObjects() ; i++)
     {
         newN = greedyKnapsack(k,i);
+        cout << "\n---------This is the same Neighbor -------------";
+        for (int i = 0; i < newN.getIndicies().size() ; i++)
+        {
+            cout << newN.getIndicies()[i] << endl;
+        }
         if (newN.getValue() > bestN.getValue())
         {
             bestN = newN;
@@ -334,18 +345,26 @@ Neighbor bestNeighbor(knapsack k)
     return bestN;
 }
 
-void steepestDecent(knapsack k)
+void steepestDecent(knapsack &k)
 {
+    k.sortItemsByIndicies();
     vector<int> indicies(1,1);
     Neighbor currentN(0,0,indicies);
-    Neighbor nextN = greedyKnapsack(k, k.getNumObjects()-1);;
+    Neighbor nextN = greedyKnapsack(k, k.getNumObjects()-1);
     while(currentN.getValue() != nextN.getValue())
     {
+        cout << "This \n";
         currentN = nextN;
         nextN = bestNeighbor(k);
     }
+    cout << "\n---------This is the final Neighbor -------------";
+    for (int i = 0; i < currentN.getIndicies().size() ; i++)
+    {
+        cout << currentN.getIndicies()[i] << endl;
+    }
     k.setItems(currentN.getIndicies());
 }
+
 
 
 int main()
@@ -363,6 +382,7 @@ int main()
 
 	vector<std::string> s;
 	s.push_back("knapsack/knapsack8.input");
+    /*
 	s.push_back("knapsack/knapsack12.input");
 	s.push_back("knapsack/knapsack16.input");
 	s.push_back("knapsack/knapsack20.input");
@@ -374,6 +394,7 @@ int main()
 	s.push_back("knapsack/knapsack256.input");
 	s.push_back("knapsack/knapsack512.input");
 	s.push_back("knapsack/knapsack1024.input");
+    */
 
 	for (int i = 0; i < s.size(); i++)
 	{
