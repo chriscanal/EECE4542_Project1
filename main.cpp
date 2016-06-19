@@ -111,9 +111,6 @@ void exhaustiveKnapsack(knapsack &sack, int seconds)
 	cout<< "\nTime Passed: " << timePassed << " seconds";
 }
 
-//
-
-
 void writeOutToFile(knapsack &sack)
 {
 	std::string fileName = "knapsack"+std::to_string(sack.getNumObjects())+".output";
@@ -208,6 +205,20 @@ void quickSort(knapsack &sacky)
 	sacky.setItems(itemVector);
 } //end of quicksort
 
+Neighbor greedyKnapsack(knapsack &k)
+{
+	for (int i = 0 ; i < k.getNumObjects(); i++)
+	{
+		if (k.getCostLimit() >= k.getCost()+k.getCost(i))
+		{
+			k.select(i);
+		}
+	}
+
+    return Neighbor(k.getValue(), k.getIndicies());
+}
+
+/*
 Neighbor greedyKnapsack(knapsack &k, int j)
 {
     k.unSelect(j);
@@ -220,6 +231,23 @@ Neighbor greedyKnapsack(knapsack &k, int j)
 	}
     Neighbor newNeighbor(j, k.getValue(), k.getIndicies());
     return newNeighbor;
+}
+*/
+
+Neighbor greedyKnapsack(knapsack &k, vector<int> indicies, int j)
+{
+	k.setItems(indicies);
+	k.unSelect(j);
+
+	for (int i = 0; i < k.getNumObjects(); i++)
+	{
+		if (!k.isSelected(i) && i != j && k.getCostLimit() >= k.getCost() + k.getCost(i))
+		{
+			k.select(i);
+		}
+	}
+
+	return Neighbor(k.getValue(), k.getIndicies());
 }
 
 void printSack(knapsack theSmackSack)
@@ -316,37 +344,80 @@ void branchAndBound(knapsack &k, float maxTime)
 	}
 	k.setItems(bestBound.getIncludedIndicies());
 }
-//fathoming: is weight to large or bound is too small
 
-Neighbor bestNeighbor(knapsack k)
+Neighbor bestNeighbor(knapsack &k, Neighbor &currentN)
 {
     Neighbor newN;
-    Neighbor bestN = greedyKnapsack(k, k.getNumObjects()-1);
-    quickSort(k);
-    for (int i = 0 ; i < k.getNumObjects() ; i++)
+    Neighbor bestN = currentN;
+
+	vector<int> indicies(currentN.getIndicies());
+
+    for (int i = 0 ; i < indicies.size() ; i++)
     {
-        newN = greedyKnapsack(k,i);
-        if (newN.getValue() > bestN.getValue())
+        newN = greedyKnapsack(k, indicies, indicies[i]);
+
+		if (newN.getValue() > bestN.getValue())
         {
             bestN = newN;
         }
     }
+
     return bestN;
 }
 
-void steepestDecent(knapsack k)
+void steepestDecent(knapsack &k)
 {
-    vector<int> indicies(1,1);
-    Neighbor currentN(0,0,indicies);
-    Neighbor nextN = greedyKnapsack(k, k.getNumObjects()-1);;
-    while(currentN.getValue() != nextN.getValue())
+	k.sortItemsByIndicies();
+    vector<int> indicies;
+    Neighbor currentN(0,indicies);
+
+    Neighbor nextN = greedyKnapsack(k);
+
+    while(currentN.getValue() < nextN.getValue())
     {
         currentN = nextN;
         nextN = bestNeighbor(k);
     }
+
     k.setItems(currentN.getIndicies());
 }
 
+Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentN, vector<int> &tabuIndicies)
+{
+	Neighbor newN;
+    Neighbor bestN = currentN;
+
+	vector<int> indicies(currentN.getIndicies());
+
+    for (int i = 0 ; i < indicies.size() ; i++)
+    {
+        newN = greedyKnapsack(k, indicies, indicies[i]);
+
+		if (newN.getValue() > bestN.getValue())
+        {
+            bestN = newN;
+        }
+    }
+
+    return bestN;
+}
+
+void linKernigham(knapsack &k)
+{
+	k.sortItemsByIndicies();
+	vector<int> indicies;
+
+	Neighbor currentN(0, indicies);
+
+	Neighbor nextN = greedyKnapsack(k);
+
+	while(/* some time limit */)
+	{
+
+	}
+
+	k.setItems(currentN.getIndicies());
+}
 
 int main()
 {
