@@ -7,14 +7,18 @@ class Neighbor
 private:
     int removedItemIndex;
     int value;
-    vecotr<int> indicies;
+    vector<int> indicies;
 
 public:
+    Neighbor();
     Neighbor(int removedItemIndex, int value, vector<int> indicies);
     int getRemovedItemIndex() const;
     int getValue() const;
     vector<int> getIndicies() const;
 };
+Neighbor::Neighbor()
+{
+}
 
 Neighbor::Neighbor(int removedItemIndex, int value, vector<int> indicies)
 {

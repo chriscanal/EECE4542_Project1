@@ -23,6 +23,7 @@
 #include "d_except.h"
 #include "d_matrix.h"
 #include "knapsack.h"
+#include "neighbor.h"
 
 using namespace std;
 
@@ -320,7 +321,7 @@ void branchAndBound(knapsack &k, float maxTime)
 Neighbor bestNeighbor(knapsack k)
 {
     Neighbor newN;
-    Neighbor bestN = greedyKnapsack(k, k.getNumObjects()-1);;
+    Neighbor bestN = greedyKnapsack(k, k.getNumObjects()-1);
     quickSort(k);
     for (int i = 0 ; i < k.getNumObjects() ; i++)
     {
@@ -335,9 +336,15 @@ Neighbor bestNeighbor(knapsack k)
 
 void steepestDecent(knapsack k)
 {
-    Neighbor currentN;
-    Neighbor nextN;
-    
+    vector<int> indicies(1,1);
+    Neighbor currentN(0,0,indicies);
+    Neighbor nextN = greedyKnapsack(k, k.getNumObjects()-1);;
+    while(currentN.getValue() != nextN.getValue())
+    {
+        currentN = nextN;
+        nextN = bestNeighbor(k);
+    }
+    k.setItems(currentN.getIndicies());
 }
 
 
@@ -385,7 +392,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			branchAndBound(k, 180);
+			steepestDecent(k);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);
