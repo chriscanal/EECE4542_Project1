@@ -7,6 +7,9 @@
 // Project 1a: Solving knapsack using exhaustive search
 //
 
+
+#include <string>
+#include <sstream>
 #include <iostream>
 #include <stack>
 #include <limits.h>
@@ -204,16 +207,18 @@ void quickSort(knapsack &sacky)
 	sacky.setItems(itemVector);
 } //end of quicksort
 
-void greedyKnapsack(knapsack &k)
+Neighbor greedyKnapsack(knapsack &k, int j)
 {
-	quickSort(k);
+    k.unSelect(j);
 	for (int i = 0 ; i < k.getNumObjects() ; i++)
 	{
-		if (k.getCostLimit() >= k.getCost()+k.getCost(i))
+		if (k.getCostLimit() >= k.getCost()+k.getCost(i) && i != j)
 		{
 			k.select(i);
 		}
 	}
+    Neighbor newNeighbor(j, k.getValue(), k.getIndicies());
+    return newNeighbor;
 }
 
 void printSack(knapsack theSmackSack)
@@ -232,7 +237,7 @@ void printSack(knapsack theSmackSack)
 	cout << endl;
 }
 
-Bound branchAndBound(knapsack k, float maxTime)
+void branchAndBound(knapsack &k, float maxTime)
 {
 	std::cout << "\nClock time: " << clock() << std::endl;
     clock_t beginTime,currentTime;
@@ -265,56 +270,75 @@ Bound branchAndBound(knapsack k, float maxTime)
 			zeroCase = k.bound(currentBound, false);
 			oneCase = k.bound(currentBound, true);
 
-			if (zeroCase.getValue() > bestValue)
+			if (zeroCase.getRegularTotalValue() > bestValue)
 			{
-				bestValue = zeroCase.getValue();
-				bestbound = zeroCase;
+				bestValue = zeroCase.getRegularTotalValue();
+				bestBound = zeroCase;
 			}
-			if (oneCase.getValue() > bestValue)
+			if (oneCase.getRegularTotalValue() > bestValue)
 			{
-				bestValue = oneCase.getValue();
-				bestbound = oneCase;
+				bestValue = oneCase.getRegularTotalValue();
+				bestBound = oneCase;
 			}
-			/*
-			zeroCase.addFractionalItem();
-			oneCase.addFractionalItem();
 
-			if (zeroCase.fathomed() == false && zeroCase.getValue() > bestValue)
+			if (zeroCase.fathomed() == false && zeroCase.getFractionalItemValue() > bestValue)
 			{
 				boundsQue.push(zeroCase);
 			} else {
-				if (zeroCase.getValue() > bestValue)
+				if (zeroCase.getRegularTotalValue() > bestValue)
 				{
-					bestValue = zeroCase.getValue();
-					bestbound = zeroCase;
+					bestValue = zeroCase.getRegularTotalValue();
+					bestBound = zeroCase;
 				}
 			}
 
-			if (oneCase.fathomed() == false && oneCase.getValue() > oneCase)
+			if (oneCase.fathomed() == false && oneCase.getFractionalItemValue() > bestValue)
 			{
 				boundsQue.push(oneCase);
 			} else {
-				if (oneCase.getValue() > bestValue)
+				if (oneCase.getRegularTotalValue() > bestValue)
 				{
-					bestValue = oneCase.getValue();
-					bestbound = oneCase;
+					bestValue = oneCase.getRegularTotalValue();
+					bestBound = oneCase;
 				}
 			}
-			*/
 		} else {
-			if (currentBound.getValue() > bestValue)
+			if (currentBound.getRegularTotalValue() > bestValue)
 			{
-				bestValue = currentBound.getValue();
-				bestbound = currentBound;
+				bestValue = currentBound.getRegularTotalValue();
+				bestBound = currentBound;
 			}
 		}
 		currentTime = clock();
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
-	return bestBound;
+	k.setItems(bestBound.getIncludedIndicies());
 }
 //fathoming: is weight to large or bound is too small
+
+Neighbor bestNeighbor(knapsack k)
+{
+    Neighbor newN;
+    Neighbor bestN = greedyKnapsack(k, k.getNumObjects()-1);;
+    quickSort(k);
+    for (int i = 0 ; i < k.getNumObjects() ; i++)
+    {
+        newN = greedyKnapsack(k,i);
+        if (newN.getValue() > bestN.getValue())
+        {
+            bestN = newN;
+        }
+    }
+    return bestN;
+}
+
+void steepestDecent(knapsack k)
+{
+    Neighbor currentN;
+    Neighbor nextN;
+    
+}
 
 
 int main()
@@ -353,7 +377,6 @@ int main()
 		if (!fin)
 		{
 			cerr << "Cannot open " << fileName << endl;
-			exit(1);
 		}
 
 		try
@@ -362,7 +385,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			branchAndBound(k, 600);
+			branchAndBound(k, 180);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);
@@ -376,11 +399,11 @@ int main()
 
 		catch (indexRangeError &ex)
 		{
-			cout << ex.what() << endl; exit(1);
+			cout << ex.what() << endl;
 		}
 		catch (rangeError &ex)
 		{
-			cout << ex.what() << endl; exit(1);
+			cout << ex.what() << endl;
 		}
 		fin.close();
 
