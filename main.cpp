@@ -411,10 +411,12 @@ void linKernigham(knapsack &k)
 
 	Neighbor nextN = greedyKnapsack(k);
 
-	while(/* some time limit */)
+	/*
+	while(some time limit)
 	{
 
 	}
+	*/
 
 	k.setItems(currentN.getIndicies());
 }
