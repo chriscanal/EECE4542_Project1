@@ -376,7 +376,7 @@ void steepestDecent(knapsack &k)
     while(currentN.getValue() < nextN.getValue())
     {
         currentN = nextN;
-        nextN = bestNeighbor(k);
+        nextN = bestNeighbor(k, currentN);
     }
 
     k.setItems(currentN.getIndicies());
