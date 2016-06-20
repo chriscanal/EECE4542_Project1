@@ -4,7 +4,7 @@
 //                                             Kenny Jean-Baptiste
 //                                             jean-baptiste.ke@husky.neu.edu
 //
-// Project 1b: Solving knapsack using exhaustive search
+// Project 5: Solving knapsack using exhaustive search
 //
 // Code to read graph instances from a file.  Uses the Boost Graph Library (BGL).
 
