@@ -25,9 +25,10 @@ public:
         vector<Item> getItems();
         void setItems(vector<Item> items);
         Bound bound();
-        Bound bound(Bound &b, bool upperBound?);
+        Bound bound(Bound &b, bool upperBound);
         void sortItemsByIndicies();
         void setItems(vector<int> includedIndicies);
+        vector<int> getIndicies() const;
 
 private:
         int numObjects;
@@ -315,10 +316,10 @@ void knapsack::quickSort()
 	} //end of while left is less than right
 
 	if (left < j) //if left size is less than number less than pivot
-		quickHelper(left, j);
+		quickSortHelper(left, j);
 
 	if (i < right) //if right size is less than number greater than pivot
-		quickHelper(i, right);
+		quickSortHelper(i, right);
 }
 
 void knapsack::sortItemsByIndicies()
@@ -334,6 +335,7 @@ Bound knapsack::bound()
     int fractionalItemIndex = -1;
     float fractionalTotalValue;
     int regularTotalCost;
+    int regularTotalValue;
     bool isValid;
     vector<int> permanentSet (numObjects, -1);
 
@@ -351,9 +353,11 @@ Bound knapsack::bound()
         }
         else
         {
+            regularTotalCost = getCost();
+            regularTotalValue = getValue();
+
             if (totalCost < costLimit)
             {
-                regularTotalCost = getCost();
                 fractionalItemIndex = i;
                 fractionalTotalValue = (float)totalValue +  (float)((costLimit - totalCost) / getCost(i)) * (float)getValue(i);
                 select(i);
@@ -362,8 +366,6 @@ Bound knapsack::bound()
         }
     }
 
-
-
     if (fractionalItemIndex == -1)
     {
         fractionalTotalValue = (float)regularTotalCost;
@@ -371,7 +373,7 @@ Bound knapsack::bound()
 
     isValid = fractionalTotalValue <= (float)costLimit;
 
-    return bound(includedIndicies, fractionalItemIndex, fractionalTotalValue, regularTotalCost, isValid, permanentSet);
+    return Bound(includedIndicies, fractionalItemIndex, fractionalTotalValue, regularTotalCost, regularTotalValue, isValid, permanentSet);
 }
 
 Bound knapsack::bound(Bound &b, bool isUpperBound)
@@ -380,6 +382,8 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
     int fractionalItemIndex = -1;
     float fractionalTotalValue;
     bool isValid;
+    int regularTotalCost;
+    int regularTotalValue;
 
     vector<int> permanentSet (b.getPermanentSet()); // get from Bound b
     int oldFractionalItemIndex = b.getFractionalItemIndex(); // get from Bound b, check if it equals to numObjects?
@@ -410,9 +414,11 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
             }
             else
             {
+                regularTotalCost = getCost();
+                regularTotalValue = getValue();
+
                 if (totalCost < costLimit)
                 {
-                    regularTotalCost = getCost();
                     fractionalItemIndex = i;
                     fractionalTotalValue = (float)totalValue +  (float)((costLimit - totalCost) / getCost(i)) * (float)getValue(i);
                     select(i);
@@ -429,7 +435,7 @@ Bound knapsack::bound(Bound &b, bool isUpperBound)
 
     isValid = fractionalTotalValue <= (float)costLimit;
 
-    return bound(includedIndicies, fractionalItemIndex, fractionalTotalValue, regularTotalCost, isValid, permanentSet);
+    return Bound(includedIndicies, fractionalItemIndex, fractionalTotalValue, regularTotalCost, regularTotalValue, isValid, permanentSet);
 }
 
 void knapsack::setItems(vector<int> includedIndicies)
@@ -443,4 +449,17 @@ void knapsack::setItems(vector<int> includedIndicies)
     {
         select(includedIndicies[i]);
     }
+}
+
+vector<int> knapsack::getIndicies() const
+{
+    vector<int> indicies;
+
+    for (int i = 0; i < numObjects; i++)
+    {
+        if (isSelected(i))
+            indicies.push_back(i);
+    }
+
+    return indicies;
 }

@@ -7,6 +7,9 @@
 // Project 1a: Solving knapsack using exhaustive search
 //
 
+
+#include <string>
+#include <sstream>
 #include <iostream>
 #include <stack>
 #include <limits.h>
@@ -17,13 +20,11 @@
 #include <time.h>
 #include <math.h>
 
-using namespace std;
-
 #include "d_except.h"
 #include "d_matrix.h"
 #include "knapsack.h"
+#include "neighbor.h"
 
-using namespace boost;
 using namespace std;
 
 void resetKnapsackSetSelection(knapsack &sack)
@@ -109,9 +110,6 @@ void exhaustiveKnapsack(knapsack &sack, int seconds)
 
 	cout<< "\nTime Passed: " << timePassed << " seconds";
 }
-
-//
-
 
 void writeOutToFile(knapsack &sack)
 {
@@ -207,16 +205,49 @@ void quickSort(knapsack &sacky)
 	sacky.setItems(itemVector);
 } //end of quicksort
 
-void greedyKnapsack(knapsack &k)
+Neighbor greedyKnapsack(knapsack &k)
 {
-	quickSort(k);
-	for (int i = 0 ; i < k.getNumObjects() ; i++)
+	for (int i = 0 ; i < k.getNumObjects(); i++)
 	{
 		if (k.getCostLimit() >= k.getCost()+k.getCost(i))
 		{
 			k.select(i);
 		}
 	}
+
+    return Neighbor(k.getValue(), k.getIndicies());
+}
+
+/*
+Neighbor greedyKnapsack(knapsack &k, int j)
+{
+    k.unSelect(j);
+	for (int i = 0 ; i < k.getNumObjects() ; i++)
+	{
+		if (k.getCostLimit() >= k.getCost()+k.getCost(i) && i != j)
+		{
+			k.select(i);
+		}
+	}
+    Neighbor newNeighbor(j, k.getValue(), k.getIndicies());
+    return newNeighbor;
+}
+*/
+
+Neighbor greedyKnapsack(knapsack &k, vector<int> indicies, int j)
+{
+	k.setItems(indicies);
+	k.unSelect(j);
+
+	for (int i = 0; i < k.getNumObjects(); i++)
+	{
+		if (!k.isSelected(i) && i != j && k.getCostLimit() >= k.getCost() + k.getCost(i))
+		{
+			k.select(i);
+		}
+	}
+
+	return Neighbor(k.getValue(), k.getIndicies());
 }
 
 void printSack(knapsack theSmackSack)
@@ -235,91 +266,184 @@ void printSack(knapsack theSmackSack)
 	cout << endl;
 }
 
-Bound branchAndBound(knapsack k, float maxTime)
+void branchAndBound(knapsack &k, float maxTime)
 {
 	std::cout << "\nClock time: " << clock() << std::endl;
     clock_t beginTime,currentTime;
 	beginTime = clock();
+	float diff;
 	float timePassed = 0.0;
 
-	std::priority_queue<int> boundsQue;
+	Bound zeroCase;
+	Bound oneCase;
+
+	std::priority_queue<Bound> boundsQue;
 	Bound firstBound = k.bound();
-	Bound currentBound = k.bound();
 	boundsQue.push(firstBound);
 
 	int bestValue = 0;
+
 	Bound bestBound;
+	Bound currentBound;
 
 	while (boundsQue.size() > 0 && timePassed < maxTime)
 	{
-		currentBound = boundsQue.front();
+		currentBound = boundsQue.top();
 		boundsQue.pop();
 
 		if (currentBound.fathomed() == false)
 		{
-			zeroCase = new Bound;
-			oneCase = new Bound;
 
-			zeroCase = currentBound;
-			oneCase = currentBound;
 
-			zeroCase.setFractionalItem(0);
-			oneCase.setFractionalItem(1);
 
-			zeroCase.addBestItems();
-			oneCase.addBestItems();
+			zeroCase = k.bound(currentBound, false);
+			oneCase = k.bound(currentBound, true);
 
-			if (zeroCase.getValue() > bestValue)
+			if (zeroCase.getRegularTotalValue() > bestValue)
 			{
-				bestValue = zeroCase.getValue();
-				bestbound = zeroCase;
+				bestValue = zeroCase.getRegularTotalValue();
+				bestBound = zeroCase;
 			}
-			if (oneCase.getValue() > bestValue)
+			if (oneCase.getRegularTotalValue() > bestValue)
 			{
-				bestValue = oneCase.getValue();
-				bestbound = oneCase;
+				bestValue = oneCase.getRegularTotalValue();
+				bestBound = oneCase;
 			}
 
-			zeroCase.addFractionalItem();
-			oneCase.addFractionalItem();
-
-			if (zeroCase.fathomed() == false && zeroCase.getValue() > bestValue)
+			if (zeroCase.fathomed() == false && zeroCase.getFractionalItemValue() > bestValue)
 			{
 				boundsQue.push(zeroCase);
 			} else {
-				if (zeroCase.getValue() > bestValue)
+				if (zeroCase.getRegularTotalValue() > bestValue)
 				{
-					bestValue = zeroCase.getValue();
-					bestbound = zeroCase;
+					bestValue = zeroCase.getRegularTotalValue();
+					bestBound = zeroCase;
 				}
 			}
 
-			if (oneCase.fathomed() == false && oneCase.getValue() > oneCase)
+			if (oneCase.fathomed() == false && oneCase.getFractionalItemValue() > bestValue)
 			{
 				boundsQue.push(oneCase);
 			} else {
-				if (oneCase.getValue() > bestValue)
+				if (oneCase.getRegularTotalValue() > bestValue)
 				{
-					bestValue = oneCase.getValue();
-					bestbound = oneCase;
+					bestValue = oneCase.getRegularTotalValue();
+					bestBound = oneCase;
 				}
 			}
 		} else {
-			if (currentBound.getValue() > bestValue)
+			if (currentBound.getRegularTotalValue() > bestValue)
 			{
-				bestValue = currentBound.getValue();
-				bestbound = currentBound;
+				bestValue = currentBound.getRegularTotalValue();
+				bestBound = currentBound;
 			}
 		}
 		currentTime = clock();
 		diff = ((float)currentTime-(float)beginTime);
 		timePassed = (diff / CLOCKS_PER_SEC);
 	}
-	return bestBound;
+	k.setItems(bestBound.getIncludedIndicies());
 }
 
-fathoming: is weight to large or bound is too small
+Neighbor bestNeighbor(knapsack &k, Neighbor &currentN)
+{
+    Neighbor newN;
+    Neighbor bestN = currentN;
 
+	vector<int> indicies(currentN.getIndicies());
+
+    for (int i = 0 ; i < indicies.size() ; i++)
+    {
+        newN = greedyKnapsack(k, indicies, indicies[i]);
+
+		if (newN.getValue() > bestN.getValue())
+        {
+            bestN = newN;
+        }
+    }
+
+    return bestN;
+}
+
+void steepestDecent(knapsack &k)
+{
+	k.sortItemsByIndicies();
+    vector<int> indicies;
+    Neighbor currentN(0,indicies);
+
+    Neighbor nextN = greedyKnapsack(k);
+
+    while(currentN.getValue() < nextN.getValue())
+    {
+        currentN = nextN;
+        nextN = bestNeighbor(k, currentN);
+    }
+
+    k.setItems(currentN.getIndicies());
+}
+
+bool contains(const vector<int> &v, int item)
+{
+	for (int i = 0; i < v.size(); i++)
+	{
+		if (v[i] == item)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentN, vector<int> &tabuIndicies)
+{
+	Neighbor newN;
+    Neighbor bestN = currentN;
+
+	vector<int> indicies(currentN.getIndicies());
+
+	int tabuIndex = -1;
+
+    for (int i = 0 ; i < indicies.size(); i++)
+    {
+		if (!contains(tabuIndicies, item))
+		{
+			newN = greedyKnapsack(k, indicies, indicies[i]);
+
+			if (newN.getValue() > bestN.getValue())
+	        {
+	            bestN = newN;
+	        }
+		}
+    }
+
+	if (tabuIndex != -1)
+	{
+		tabuIndicies.push_back(tabuIndex);
+	}
+
+    return bestN;
+}
+
+void linKernigham(knapsack &k)
+{
+	k.sortItemsByIndicies();
+
+	vector<int> tabuIndicies;
+	vector<int> indicies;
+
+	Neighbor currentN(0, indicies);
+
+	Neighbor nextN = greedyKnapsack(k);
+
+	while(tabuIndicies.size() < k.getNumObjects() && currentN.getValue() < nextN.getValue())
+	{
+		currentN = nextN;
+        nextN = bestNeighbor(k, currentN);
+	}
+
+	k.setItems(currentN.getIndicies());
+}
 
 int main()
 {
@@ -357,7 +481,6 @@ int main()
 		if (!fin)
 		{
 			cerr << "Cannot open " << fileName << endl;
-			exit(1);
 		}
 
 		try
@@ -366,7 +489,7 @@ int main()
 			knapsack k(fin);
 
 			cout << "Printing final choice Knapsack" << endl;
-			branchAndBound(k, 600);
+			steepestDecent(k);
 			k.printSolution();
 
 			//exhaustiveKnapsack(k, 600);
@@ -380,11 +503,11 @@ int main()
 
 		catch (indexRangeError &ex)
 		{
-			cout << ex.what() << endl; exit(1);
+			cout << ex.what() << endl;
 		}
 		catch (rangeError &ex)
 		{
-			cout << ex.what() << endl; exit(1);
+			cout << ex.what() << endl;
 		}
 		fin.close();
 

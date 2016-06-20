@@ -180,9 +180,6 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	return minConflicts;
 }
 
-int getDegree(Graph::vertex_descriptor vertex1, Graph &g){
-	return 1;
-}
 void quickHelper(vector< Graph::vertex_descriptor > *a, Graph &g, int left, int right)
 //helper for recursion in quicksort
 {

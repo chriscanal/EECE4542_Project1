@@ -1,0 +1,5 @@
+
+Chris Canal
+Kenny Jean-Baptiste
+Advanced Algorithms Project 4
+Using branch and bound was significantly slower than ampl. Our branch and bound function gave us optimal answers for knapsack sets up to size 128. After knapsack set 128, our ampl solution out performed our branch and bound solution. We believe this is due to all the times we copied vectors when creating our bound object. Our knapsack set of size 256 and 512 gave us the same results as our greedy algorithm. Our bound object stores information for a single solution. We compare always branch on the current best bound object first. This way greater valid solutions are more likely to be found first, and we can use this solution to cancel out other solutions in the queue with a value less than or equal to it.
