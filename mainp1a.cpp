@@ -1,4 +1,4 @@
-// main.cpp
+ // main.cpp
 // Advanced Algorithms Project 1               Chris Canal
 //                                             canal.c@husky.neu.edu
 //                                             Kenny Jean-Baptiste
@@ -318,9 +318,6 @@ Bound branchAndBound(knapsack k, float maxTime)
 	}
 	return bestBound;
 }
-
-fathoming: is weight to large or bound is too small
-
 
 int main()
 {
