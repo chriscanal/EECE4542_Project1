@@ -376,10 +376,23 @@ void steepestDecent(knapsack &k)
     while(currentN.getValue() < nextN.getValue())
     {
         currentN = nextN;
-        nextN = bestNeighbor(k);
+        nextN = bestNeighbor(k, currentN);
     }
 
     k.setItems(currentN.getIndicies());
+}
+
+bool contains(const vector<int> &v, int item)
+{
+	for (int i = 0; i < v.size(); i++)
+	{
+		if (v[i] == item)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentN, vector<int> &tabuIndicies)
@@ -389,15 +402,25 @@ Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentN, vector<int> &tabuIndi
 
 	vector<int> indicies(currentN.getIndicies());
 
-    for (int i = 0 ; i < indicies.size() ; i++)
-    {
-        newN = greedyKnapsack(k, indicies, indicies[i]);
+	int tabuIndex = -1;
 
-		if (newN.getValue() > bestN.getValue())
-        {
-            bestN = newN;
-        }
+    for (int i = 0 ; i < indicies.size(); i++)
+    {
+		if (!contains(tabuIndicies, item))
+		{
+			newN = greedyKnapsack(k, indicies, indicies[i]);
+
+			if (newN.getValue() > bestN.getValue())
+	        {
+	            bestN = newN;
+	        }
+		}
     }
+
+	if (tabuIndex != -1)
+	{
+		tabuIndicies.push_back(tabuIndex);
+	}
 
     return bestN;
 }
@@ -405,18 +428,19 @@ Neighbor bestNeighborTabu(knapsack &k, Neighbor &currentN, vector<int> &tabuIndi
 void linKernigham(knapsack &k)
 {
 	k.sortItemsByIndicies();
+
+	vector<int> tabuIndicies;
 	vector<int> indicies;
 
 	Neighbor currentN(0, indicies);
 
 	Neighbor nextN = greedyKnapsack(k);
 
-	/*
-	while(some time limit)
+	while(tabuIndicies.size() < k.getNumObjects() && currentN.getValue() < nextN.getValue())
 	{
-
+		currentN = nextN;
+        nextN = bestNeighbor(k, currentN);
 	}
-	*/
 
 	k.setItems(currentN.getIndicies());
 }
