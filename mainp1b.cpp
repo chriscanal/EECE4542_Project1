@@ -239,7 +239,7 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 	return degree;
 }
 
-vector<vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, Graph &g)
+vector<Graph::vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, Graph &g)
 {
 	vector<Graph::vertex_descriptor> nodes;
 
@@ -298,11 +298,15 @@ int getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
 {
 	vector<int> colorCount(colors, 0);
 
-	vector<vertex_descriptor> adjacentVertices = getAdjacentVertices(v, g);
+	vector<Graph::vertex_descriptor> adjacentVertices = getAdjacentVertices(v, g);
 
 	for (int i = 0; i < adjacentVertices.size(); i++)
 	{
-		colorCount[g[adjacentVertices[i]].color]++;
+		if (g[adjacentVertices[i]].color >= -1 &&
+			g[adjacentVertices[i]].color < colors)
+		{
+			colorCount[g[adjacentVertices[i]].color]++;
+		}
 	}
 
 	int color = -1;
@@ -374,7 +378,7 @@ vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descri
 	vector<Graph::vertex_descriptor> newVertexVector(vertexVector);
 	int left = 0;
 	int right = vertexVector.size() - 1;
-	int i = left
+	int i = left;
 	int j = right;
 	Graph::vertex_descriptor tmp;
 	Graph::vertex_descriptor pivot = newVertexVector.at((left + right) / 2);
@@ -408,10 +412,24 @@ vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descri
 	return newVertexVector;
 }
 
+void initializeVertexColors(Graph &g)
+{
+	// Get a pair containing iterators pointing the beginning and end of the
+	// list of nodes
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(Graph &g);
+
+	// Loop over all nodes in the graph
+	for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr)
+	{
+		g[*vItr].color = -1;
+	}
+}
+
 int greedy(Graph &g, int colors)
 {
 	cout << "\ninside the greedy";
 	int color = -1;
+
 	vector<Graph::vertex_descriptor> vertexVector = getVertices(g);
 	vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
 
@@ -424,6 +442,8 @@ int greedy(Graph &g, int colors)
 
 	return getConflicts(g);
 }
+
+
 
 int main()
 {
@@ -468,6 +488,8 @@ int main()
 			cout << "Reading graph" << endl;
 			Graph g;
 			colors = initializeGraph(g,fin);
+
+			initializeVertexColors(g);
 
 			cout << "Num nodes: " << num_vertices(g) << endl;
 			cout << "Num edges: " << num_edges(g) << endl;
