@@ -180,6 +180,31 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	return minConflicts;
 }
 
+int getDegree(Graph::vertex_descriptor &v, Graph &g)
+{
+	int degree = 0;
+
+	// Returns the target vertex of edge e.
+	Graph::vertex_descriptor targetNode;
+	Graph::vertex_descriptor sourceNode;
+
+	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+
+	// Loop over all edges in the graph
+	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
+	{
+		targetNode = target(*eItr, g);
+		sourceNode = source(*eItr, g);
+
+		if (targetNode == v || sourceNode == v)
+		{
+			degree++;
+		}
+	}
+
+	return degree;
+}
+
 void quickHelper(vector< Graph::vertex_descriptor > *a, Graph &g, int left, int right)
 //helper for recursion in quicksort
 {
@@ -190,11 +215,11 @@ void quickHelper(vector< Graph::vertex_descriptor > *a, Graph &g, int left, int 
 	//partition
 	while (i <= j)
 	{
-		while (getDegree(a->at(i), g) < getDegree(pivot), g) //determines how many are less than pivot
+		while (getDegree(a->at(i), g) < getDegree(pivot, g)) //determines how many are less than pivot
 			i++;
 
-		while (getDegree(a->at(i), g) > getDegree(pivot), g) //determines how many are more than pivot
-			j--;s
+		while (getDegree(a->at(i), g) > getDegree(pivot, g)) //determines how many are more than pivot
+			j--;
 
 		if (i <= j)
 		//checks how the list was divided around pivot, inserts in list
@@ -208,12 +233,17 @@ void quickHelper(vector< Graph::vertex_descriptor > *a, Graph &g, int left, int 
 	}
 
 	if (left < j)
-		quickHelper(a, left, j); //recurs on quickHelper
+		quickHelper(a, g, left, j); //recurs on quickHelper
 
 	if (i < right)
-		quickHelper(a, i, right); //recurs on quickHelper
+		quickHelper(a, g, i, right); //recurs on quickHelper
 
 } //end of quick helper
+
+vector< Graph::vertex_descriptor > getVertexVector(Graph &g)
+{
+	int length = g;
+}
 
 vector< Graph::vertex_descriptor > quickSort(Graph &g)
 //quicksort function
@@ -222,7 +252,7 @@ vector< Graph::vertex_descriptor > quickSort(Graph &g)
 	int right = num_vertices(g) - 1;
 	int i = left, j = right;
 	Graph::vertex_descriptor tmp;
-	vector< Graph::vertex_descriptor > vertexVector(g.getVertexVector());
+	vector< Graph::vertex_descriptor > vertexVector(getVertexVector(g));
 	Graph::vertex_descriptor pivot = vertexVector.at((left + right) / 2);
 
 	//partition
@@ -249,10 +279,10 @@ vector< Graph::vertex_descriptor > quickSort(Graph &g)
 	} //end of while left is less than right
 
 	if (left < j) //if left size is less than number less than pivot
-		quickHelper(&vertexVector, left, j);
+		quickHelper(&vertexVector, g, left, j);
 
 	if (i < right) //if right size is less than number greater than pivot
-		quickHelper(&vertexVector, i, right);
+		quickHelper(&vertexVector, g, i, right);
 
 
 	return vertexVector;
@@ -293,30 +323,6 @@ vector<Graph::vertex_descriptor> getVertices(Graph &g)
 	return nodes;
 }
 
-int getDegree(Graph::vertex_descriptor &v, Graph &g)
-{
-	int degree = 0;
-
-	// Returns the target vertex of edge e.
-	Graph::vertex_descriptor targetNode;
-	Graph::vertex_descriptor sourceNode;
-
-	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
-
-	// Loop over all edges in the graph
-	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
-	{
-		targetNode = target(*eItr, g);
-		sourceNode = source(*eItr, g);
-
-		if (targetNode == v || sourceNode == v)
-		{
-			degree++;
-		}
-	}
-
-	return degree;
-}
 
 std::vector<vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, Graph &g)
 {
