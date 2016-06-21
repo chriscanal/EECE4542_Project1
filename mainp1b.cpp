@@ -180,85 +180,6 @@ int exhaustiveColoring(Graph &g, int numColors, int seconds)
 	return minConflicts;
 }
 
-void quickHelper(vector< Graph::vertex_descriptor > *a, Graph &g, int left, int right)
-//helper for recursion in quicksort
-{
-	int i = left, j = right;
-	Graph::vertex_descriptor tmp;
-	Graph::vertex_descriptor pivot = a->at((left + right) / 2);
-
-	//partition
-	while (i <= j)
-	{
-		while (getDegree(a->at(i), g) < getDegree(pivot), g) //determines how many are less than pivot
-			i++;
-
-		while (getDegree(a->at(i), g) > getDegree(pivot), g) //determines how many are more than pivot
-			j--;s
-
-		if (i <= j)
-		//checks how the list was divided around pivot, inserts in list
-		{
-			tmp = a->at(i);
-			a->at(i) = a->at(j);
-			a->at(j) = tmp;
-			i++;
-			j--;
-		}
-	}
-
-	if (left < j)
-		quickHelper(a, left, j); //recurs on quickHelper
-
-	if (i < right)
-		quickHelper(a, i, right); //recurs on quickHelper
-
-} //end of quick helper
-
-vector< Graph::vertex_descriptor > quickSort(Graph &g)
-//quicksort function
-{
-	int left = 0;
-	int right = num_vertices(g) - 1;
-	int i = left, j = right;
-	Graph::vertex_descriptor tmp;
-	vector< Graph::vertex_descriptor > vertexVector(g.getVertexVector());
-	Graph::vertex_descriptor pivot = vertexVector.at((left + right) / 2);
-
-	//partition
-	while (i <= j)
-	//while size of left is less than size of right
-	{
-		while (getDegree(vertexVector.at(i), g) < getDegree(pivot, g)) //counts strings less than pivot
-			i++;
-
-		while (getDegree(vertexVector.at(i), g) > getDegree(pivot, g)) //strings greater than pivot
-			j--;
-
-		if (i <= j)
-		//if left is less than right
-		{
-			tmp = vertexVector.at(i);
-			vertexVector.at(i) = vertexVector.at(j);
-			vertexVector.at(j) = tmp;
-			i++;
-			j--;
-
-		} //end of if left is less than right
-
-	} //end of while left is less than right
-
-	if (left < j) //if left size is less than number less than pivot
-		quickHelper(&vertexVector, left, j);
-
-	if (i < right) //if right size is less than number greater than pivot
-		quickHelper(&vertexVector, i, right);
-
-
-	return vertexVector;
-} //end of quicksort
-
-
 void writeOutToFile(Graph &g, int conflicts, std::string inputFileName)
 {
 	std::string fileName = inputFileName+".output";
@@ -318,7 +239,7 @@ int getDegree(Graph::vertex_descriptor &v, Graph &g)
 	return degree;
 }
 
-std::vector<vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, Graph &g)
+vector<vertex_descriptor> getAdjacentVertices(Graph::vertex_descriptor &v, Graph &g)
 {
 	vector<Graph::vertex_descriptor> nodes;
 
@@ -375,44 +296,28 @@ int getConflicts(Graph &g)
 
 int getBestColor(int colors, Graph::vertex_descriptor &v, Graph &g)
 {
-	int color = 1;
+	vector<int> colorCount(colors, 0);
 
-	// Returns the target vertex of edge e.
-	Graph::vertex_descriptor targetNode;
-	Graph::vertex_descriptor sourceNode;
+	vector<vertex_descriptor> adjacentVertices = getAdjacentVertices(v, g);
 
-	pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
-
-	// Loop over all edges in the graph
-	for (Graph::edge_iterator eItr = eItrRange.first; eItr != eItrRange.second; ++eItr)
+	for (int i = 0; i < adjacentVertices.size(); i++)
 	{
-		targetNode = target(*eItr, g);
-		sourceNode = source(*eItr, g);
+		colorCount[g[adjacentVertices[i]].color]++;
+	}
 
-		if (targetNode == v)
+	int color = -1;
+
+	for (int i = 0; i < colorCount.size(); i++)
+	{
+		if (color == -1)
 		{
-			if (g[sourceNode].color == g[v].color)
-			{
-				color++;
-				if(color == colors)
-				{
-					return 0;
-				}
-			}
+			color = i;
 		}
-
 		else
 		{
-			if (sourceNode == v)
+			if (colorCount[color] > colorCount[i])
 			{
-				if (g[targetNode].color == g[v].color)
-				{
-					color++;
-					if(color == colors)
-					{
-						return 0;
-					}
-				}
+				color = i;
 			}
 		}
 	}
@@ -430,7 +335,6 @@ void addColor(int color, Graph::vertex_descriptor &v, Graph &g)
 void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int right)
 //helper for recursion in quicksort
 {
-	cout << "\n inside the quicksort helper";
 	int i = left, j = right;
 	Graph::vertex_descriptor tmp;
 	Graph::vertex_descriptor pivot = a.at((left + right) / 2);
@@ -438,9 +342,6 @@ void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int r
 	//partition
 	while (i <= j)
 	{
-		cout << "\n inside the quicksort helper while loop";
-		cout << "\n i =" << i;
-		cout << "\n j =" << j;
 		while (getDegree(a.at(i),g) >= getDegree(pivot,g) && i < pivot) //determines how many are less than pivot
 			i++;
 
@@ -450,10 +351,6 @@ void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int r
 		if (i <= j)
 		//checks how the list was divided around pivot, inserts in list
 		{
-			cout << "\nWhat is going on";
-			cout << "\nin if statment";
-			cout << "\n i =" << i;
-			cout << "\n j =" << j;
 			tmp = a.at(i);
 			a.at(i) = a.at(j);
 			a.at(j) = tmp;
@@ -474,47 +371,49 @@ void quickHelper(vector<Graph::vertex_descriptor> &a,  Graph &g, int left, int r
 vector<Graph::vertex_descriptor> quickSort(Graph &g, vector<Graph::vertex_descriptor>& vertexVector)
 //quicksort function
 {
-	int i = 0, j = 1;
-	int min = 0;
-	int location = 0;
-	vector<Graph::vertex_descriptor> newVertexVector;
-	vector<bool> vertexUsed(vertexVector.size(), false);
-	cout << "\nwhy?";
+	vector<Graph::vertex_descriptor> newVertexVector(vertexVector);
+	int left = 0;
+	int right = vertexVector.size() - 1;
+	int i = left
+	int j = right;
+	Graph::vertex_descriptor tmp;
+	Graph::vertex_descriptor pivot = newVertexVector.at((left + right) / 2);
 
-
-	while (i < vertexVector.size()-1)
-	//while size of left is less than size of right
+	//partition
+	while (i <= j)
 	{
-		cout << "\nwhy me?";
-		min = getDegree(vertexVector.at(i),g);
-		location = i;
-		for (int j = 0; j < vertexVector.size()-1; j++)
+		while (getDegree(newVertexVector.at(i),g) >= getDegree(pivot,g) && i < pivot) //determines how many are less than pivot
+			i++;
+
+		while (getDegree(newVertexVector.at(j),g) < getDegree(pivot,g)) //determines how many are more than pivot
+			j--;
+
+		if (i <= j)
+		//checks how the list was divided around pivot, inserts in list
 		{
-			cout << "\n herrro prease" << j;
-			if (min > getDegree(vertexVector.at(j),g) && !vertexUsed.at(j))
-			{
-				min = getDegree(vertexVector.at(j),g);
-				location = j;
-			}
+			tmp = newVertexVector.at(i);
+			newVertexVector.at(i) = newVertexVector.at(j);
+			newVertexVector.at(j) = tmp;
+			i++;
+			j--;
 		}
-		vertexUsed.at(location) = true;
-		newVertexVector.push_back(vertexVector.at(location));
+	}
 
-		i++;
-	} //end of while left is less than right
+	if (left < j)
+		quickHelper(newVertexVector, g, left, j); //recurs on quickHelper
 
-	cout << "The sort finished";
+	if (i < right)
+		quickHelper(newVertexVector, g, i, right); //recurs on quickHelper
+
 	return newVertexVector;
-
-	return vertexVector;
-} //end of quicksort
+}
 
 int greedy(Graph &g, int colors)
 {
 	cout << "\ninside the greedy";
 	int color = -1;
 	vector<Graph::vertex_descriptor> vertexVector = getVertices(g);
-	//vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
+	vector<Graph::vertex_descriptor> sortedVertexVector = quickSort(g, vertexVector);
 
 	for(int i = 0; i < vertexVector.size(); i++)
 	{
